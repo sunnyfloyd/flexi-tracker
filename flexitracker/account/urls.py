@@ -10,4 +10,5 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('register/', views.RegistrationFormView.as_view(), name='register'),
     path('register_done/', views.register_done, name='register_done'),
+    path('edit/', views.edit, name='edit')
 ]

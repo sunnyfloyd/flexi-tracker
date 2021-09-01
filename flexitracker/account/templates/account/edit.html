@@ -1,0 +1,13 @@
+{% extends 'tracker/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form action="{% url 'account:edit' %}" method="post">
+    {{  user_form|crispy }}
+    {{  profile_form|crispy }}
+    {% csrf_token %}
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+{% endblock %}
