@@ -19,7 +19,7 @@
           <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
+          <a href="{% url 'account:dashboard' %}" class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
         </div>
       </div>
         {% endblock %}
@@ -34,36 +34,39 @@
             <li class="nav-header">{% block nav_heading %}MAIN NAVIGATION{% endblock %}</li>
 
             {% block nav_links %}
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i> 
-                        <p>Example link</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="nav-icon fas fa-tachometer-alt"></i> 
-                            <p>Example link active MD</p>
-                        </a>
-                    </li>
                 <li class="nav-item has-tree-view ">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-object-group"></i> <p>Sub menu</p>
+                        <i class="nav-icon fas fa-object-group"></i> <p>Switch Projects</p>
                         <p><i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview menu-open">
                             <li class="nav-item">
                                     <a href="#" class="nav-link">
-                                        <i class="nav-icon fas fa-circle"></i> link
+                                        <i class="nav-icon fas fa-folder-open"></i> Project 1
                                     </a>
                                 </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link active">
-                                <i class="nav-icon fas fa-user"></i> Another link
+                                <i class="nav-icon fas fa-folder-open"></i> Project 2
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-plus"></i> Create New Project
                             </a>
                         </li>
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-bug"></i> Project Tracker
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-users"></i> Groups
+                    </a>
                 </li>
             {% endblock nav_links %}
             {% endblock nav_links_outer %}

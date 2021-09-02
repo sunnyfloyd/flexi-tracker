@@ -1,6 +1,10 @@
 {% extends 'tracker/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title_outer %}
+    <title>{% block title %}Edit account info{% endblock %}</title>
+{% endblock %}
+
 {% block content %}
 <form action="{% url 'account:edit' %}" method="post">
     {{  user_form|crispy }}

@@ -1,5 +1,9 @@
 {% extends 'tracker/base.html' %}
 
+{% block title_outer %}
+    <title>{% block title %}Logged-Out{% endblock %}</title>
+{% endblock %}
+
 {% block content%}
     <p>
         You have been successfully logged out!    

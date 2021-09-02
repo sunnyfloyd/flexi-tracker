@@ -1,5 +1,9 @@
 {% extends 'tracker/base.html' %}
 
+{% block title_outer %}
+    <title>{% block title %}Registration Completed{% endblock %}</title>
+{% endblock %}
+
 {% block content %}
     <p>
         You have been successfully registered!

@@ -1,6 +1,10 @@
 {% extends 'tracker/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title_outer %}
+    <title>{% block title %}Register{% endblock %}</title>
+{% endblock %}
+
 {% block content %}
 <form action={% url 'account:register' %} method="post">
     {{ form|crispy }}
