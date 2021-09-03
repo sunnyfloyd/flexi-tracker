@@ -5,4 +5,7 @@ app_name = 'tracker'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    path('issue/<int:pk>/', views.IssueDetailView.as_view(), name='issue_detail'),
+    path('issues/', views.IssueListView.as_view(), name='issue_list'),
+    path('new_issue/', views.IssueFormView.as_view(), name='new_issue'),
 ]

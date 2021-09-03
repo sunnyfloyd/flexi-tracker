@@ -8,9 +8,3 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'Profile for user {self.user.username}'
-
-class Issue(models.Model):
-    creator = models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
-
-    name = models.CharField(max_length=50)
-

@@ -1,0 +1,10 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+    {% for issue in object_list  %}
+    <div>
+        <p>{{ issue.name }}</p>
+        <p>{{ issue.description }}</p>
+    </div>
+    {% endfor %}
+{% endblock content %}
