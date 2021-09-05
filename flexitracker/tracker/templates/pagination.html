@@ -1,0 +1,21 @@
+<div class="row">
+  <div class="col-sm-12 col-md-5">
+      <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing
+          {{ showing_first }} to {{ showing_end }} of {{ paginator.count }} entries</div>
+  </div>
+
+  <div class="col-sm-12 col-md-7">
+    <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
+      <ul class="pagination">
+        <li class="paginate_button page-item previous {% if not page.has_previous %}disabled{% endif %}" id="example1_previous">
+          <a href="?page={{ page.number|add:'-1' }}" aria-controls="example1" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li>
+        {% for page_num in paginator.page_range %}
+        <li class="paginate_button page-item {% if page_num == page.number %}active{% endif %}"><a href="?page={{ page_num }}" aria-controls="example1" data-dt-idx="{{ page_num }}" tabindex="0"
+            class="page-link">{{ page_num }}</a></li>
+        {% endfor %}
+        <li class="paginate_button page-item next {% if not page.has_next %}disabled{% endif %}" id="example1_next"><a href="?page={{ page.number|add:'1' }}" aria-controls="example1" data-dt-idx="7"
+            tabindex="0" class="page-link">Next</a></li>
+      </ul>
+    </div>
+  </div>
+</div>

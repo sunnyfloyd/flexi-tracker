@@ -1,19 +1,14 @@
 {% extends 'adminlte/base.html' %}
+{% load static %}
+
+{% block stylesheets %}
+    {% include 'adminlte/lib/_styles.html' %}
+    {% block style_sheets %}
+        <link href="{% static "css/bootstrap4.css" %}" rel="stylesheet">
+        <link href="{% static "css/tracker.css" %}" rel="stylesheet">
+    {% endblock %}
+{% endblock %}
 
 {% block content %}
-    <!-- Default box -->
-    <div class="box">
-        <div class="box-header with-border">
-            <h3 class="box-title">Title</h3>
-        </div>
-        <div class="box-body">
-            Start creating your amazing application!
-        </div>
-        <!-- /.box-body -->
-        <div class="box-footer">
-            Footer
-        </div>
-        <!-- /.box-footer-->
-    </div>
-    <!-- /.box -->
+
 {% endblock %}

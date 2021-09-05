@@ -25,6 +25,13 @@ class Issue(models.Model):
         ('low', 'Low'),
     ]
     priority = models.CharField(choices=ISSUE_PRIORITY_CHOICES, max_length=20, default='medium')
+    ISSUE_STATUS_CHOICES = [
+        ('to_do', 'To-do'),
+        ('in_progress', 'In progress'),
+        ('in_review', 'In review'),
+        ('done', 'Done'),
+    ]
+    status = models.CharField(choices=ISSUE_STATUS_CHOICES, max_length=20, default='to_do')
     work_effort_estimate = models.IntegerField()
     work_effort_actual = models.IntegerField(default=0)
     due_date = models.DateTimeField()
