@@ -31,7 +31,7 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             {% block nav_links_outer %}
-            <li class="nav-header">{% block nav_heading %}MAIN NAVIGATION{% endblock %}</li>
+            <li class="nav-header">PROJECTS</li>
 
             {% block nav_links %}
                 {% comment %} <li class="nav-item has-tree-view ">
@@ -41,33 +41,9 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview menu-open">
-                            <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="nav-icon fas fa-folder-open"></i> Project 1
-                                    </a>
-                                </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link active">
-                                <i class="nav-icon fas fa-folder-open"></i> Project 2
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-plus"></i> Create New Project
-                            </a>
-                        </li>
-                    </ul>
-                </li> {% endcomment %}
-                <li class="nav-item has-tree-view ">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-object-group"></i> <p>Switch Projects</p>
-                        <p><i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview menu-open">
                         {% for project in projects %}
                             <li class="nav-item">
-                                <a href="{% url 'tracker:issue_list' project.name %}" class="nav-link {% if project.name == view.kwargs.project %}active{% endif %}">
+                                <a href="{{ project.get_absolute_url }}" class="nav-link {% if project.name == view.kwargs.project %}active{% endif %}">
                                     <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
                                 </a>
                             </li>
@@ -78,20 +54,35 @@
                             </a>
                         </li>
                     </ul>
+                </li> {% endcomment %}
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-plus"></i> Create New Project
+                    </a>
+                </li>
+                {% for project in projects %}
+                    <li class="nav-item">
+                        <a href="{{ project.get_absolute_url }}" class="nav-link {% if project.name == view.kwargs.project %}active{% endif %}">
+                            <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+
+                <li class="nav-header">FUNCTIONS</li>
+                <li class="nav-item">
+                    <a href="{% url 'tracker:new_issue' %}" class="nav-link">
+                        <i class="nav-icon fas fa-bug"></i> Create Issue
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="{% url 'tracker:new_issue' %}" class="nav-link">
-                        <i class="nav-icon fas fa-plus-circle"></i> Create Issue
+                        <i class="nav-icon fas fa-cogs"></i> Manage Projects
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{% url 'tracker:issue_list' view.kwargs.project %}" class="nav-link">
-                        <i class="nav-icon fas fa-bug"></i> Project Tracker
-                    </a>
-                </li>
+                <li class="nav-header">CUSTOM PROJECTS</li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i> Teams
+                        <i class="nav-icon fas fa-flask"></i> Customize New Project
                     </a>
                 </li>
             {% endblock nav_links %}

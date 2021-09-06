@@ -2,7 +2,7 @@ from django.http import request
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
-from .models import Issue, Project, Team
+from .models import Issue, Project
 from .forms import IssueForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
@@ -31,7 +31,7 @@ class IssueListView(generic.ListView):
         context = super().get_context_data(**kwargs)
 
         # Adding projects
-        context['projects'] = Project.objects.all()
+        # context['projects'] = Project.objects.all()
 
         # Adding pagination
         per_page = context["paginator"].per_page

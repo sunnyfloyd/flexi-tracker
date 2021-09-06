@@ -5,38 +5,45 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 
-class Team(models.Model):
+# class Team(models.Model):
 
-    name = CharField(max_length=50)
-    leader = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="leading"
-    )
-    members = models.ManyToManyField(get_user_model(), related_name="teams")
+#     name = CharField(max_length=50)
+#     leader = models.ForeignKey(
+#         get_user_model(), on_delete=models.CASCADE, related_name="leading"
+#     )
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
-    # def get_absolute_url(self):
-    #     return reverse('team_detail', kwargs={'pk': self.pk})
+#     # def get_absolute_url(self):
+#     #     return reverse('team_detail', kwargs={'pk': self.pk})
 
 
 class Project(models.Model):
 
     name = models.CharField(max_length=50, unique=True)
-    creator = models.ForeignKey(
+    leader = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="created_projects"
     )
+    members = models.ManyToManyField(
+        get_user_model(), blank=True, related_name="projects"
+    )
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('tracker:project_detail', kwargs={'project': self.name})
+        return reverse("tracker:issue_list", kwargs={"project": self.name})
 
 
 class Issue(models.Model):
 
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='issues')
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="issues"
+    )
     creator = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="created_issues"
     )
@@ -84,6 +91,7 @@ class Issue(models.Model):
     class Meta:
         verbose_name = _("Issue")
         verbose_name_plural = _("Issues")
+        ordering = ("-creation_date",)
 
     def __str__(self):
         return self.name
