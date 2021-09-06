@@ -59,13 +59,18 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-bug"></i> Project Tracker
+                    <a href="{% url 'tracker:new_issue' %}" class="nav-link">
+                        <i class="nav-icon fas fa-plus-circle"></i> Create Issue
                     </a>
                 </li>
                 <li class="nav-item">
+                    {% comment %} <a href="{% url 'tracker:issue_list' %}" class="nav-link">
+                        <i class="nav-icon fas fa-bug"></i> Project Tracker
+                    </a> {% endcomment %}
+                </li>
+                <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i> Groups
+                        <i class="nav-icon fas fa-users"></i> Teams
                     </a>
                 </li>
             {% endblock nav_links %}

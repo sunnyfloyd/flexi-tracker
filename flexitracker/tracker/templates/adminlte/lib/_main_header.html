@@ -50,7 +50,7 @@
         <a href="#" class="dropdown-item">
           <!-- Message Start -->
           <div class="media">
-            <img src="{%static 'admin-lte/dist/img/user1-128x128.jpg' %}" alt="User Avatar"
+            <img src="{% avatar_url 128 %}" alt="User Avatar"
               class="img-size-50 mr-3 img-circle">
             <div class="media-body">
               <h3 class="dropdown-item-title">
@@ -67,7 +67,7 @@
         <a href="#" class="dropdown-item">
           <!-- Message Start -->
           <div class="media">
-            <img src="{%static 'admin-lte/dist/img/user4-128x128.jpg' %}" alt="User Avatar"
+            <img src="{% avatar_url 128 %}" alt="User Avatar"
               class="img-size-50 img-circle mr-3">
             <div class="media-body">
               <h3 class="dropdown-item-title">
@@ -84,7 +84,7 @@
         <a href="#" class="dropdown-item">
           <!-- Message Start -->
           <div class="media">
-            <img src="{%static 'admin-lte/dist/img/user3-128x128.jpg' %}" alt="User Avatar"
+            <img src="{% avatar_url 128 %}" alt="User Avatar"
               class="img-size-50 img-circle mr-3">
             <div class="media-body">
               <h3 class="dropdown-item-title">
@@ -137,7 +137,7 @@
       <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
         <!-- User image -->
         <li class="user-header bg-primary">
-          <img src="{% avatar_url size=160 %}" class="img-circle elevation-2" alt="User Image">
+          <img src="{% avatar_url 160 %}" class="img-circle elevation-2" alt="User Image">
 
           <p>
             {% firstof request.user.get_short_name request.user.get_username %} - {% firstof request.user.get_role %}
