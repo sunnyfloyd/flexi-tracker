@@ -22,7 +22,7 @@ class Team(models.Model):
 
 class Project(models.Model):
 
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     creator = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="created_projects"
     )
@@ -30,12 +30,13 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
-    # def get_absolute_url(self):
-    #     return reverse('project_detail', kwargs={'pk': self.pk})
+    def get_absolute_url(self):
+        return reverse('tracker:project_detail', kwargs={'project': self.name})
 
 
 class Issue(models.Model):
 
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='issues')
     creator = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="created_issues"
     )
@@ -79,7 +80,6 @@ class Issue(models.Model):
     child_tasks = models.ManyToManyField(
         "self", symmetrical=False, blank=True, related_name="parent_tasks"
     )
-    # project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='issues')
 
     class Meta:
         verbose_name = _("Issue")

@@ -1,12 +1,13 @@
 from django.http import request
 from django.http.response import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views import generic
-from .models import Issue
+from .models import Issue, Project, Team
 from .forms import IssueForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 class IndexView(generic.TemplateView):
     template_name = "tracker/base.html"
@@ -22,10 +23,17 @@ class IssueListView(generic.ListView):
     model = Issue
     paginate_by = 3
 
+    def get_queryset(self):
+        project = get_object_or_404(Project, name__iexact=self.kwargs["project"])
+        return Issue.objects.filter(project=project)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Adding additional pagination related context to the template
+        # Adding projects
+        context['projects'] = Project.objects.all()
+
+        # Adding pagination
         per_page = context["paginator"].per_page
         page_obj = context["page_obj"]
         context["showing_first"] = per_page * (page_obj.number - 1) + 1

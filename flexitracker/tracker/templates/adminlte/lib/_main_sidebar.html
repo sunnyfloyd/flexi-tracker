@@ -34,7 +34,7 @@
             <li class="nav-header">{% block nav_heading %}MAIN NAVIGATION{% endblock %}</li>
 
             {% block nav_links %}
-                <li class="nav-item has-tree-view ">
+                {% comment %} <li class="nav-item has-tree-view ">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-object-group"></i> <p>Switch Projects</p>
                         <p><i class="right fas fa-angle-left"></i>
@@ -57,6 +57,27 @@
                             </a>
                         </li>
                     </ul>
+                </li> {% endcomment %}
+                <li class="nav-item has-tree-view ">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-object-group"></i> <p>Switch Projects</p>
+                        <p><i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview menu-open">
+                        {% for project in projects %}
+                            <li class="nav-item">
+                                <a href="{% url 'tracker:issue_list' project.name %}" class="nav-link {% if project.name == view.kwargs.project %}active{% endif %}">
+                                    <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-plus"></i> Create New Project
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a href="{% url 'tracker:new_issue' %}" class="nav-link">
@@ -64,9 +85,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    {% comment %} <a href="{% url 'tracker:issue_list' %}" class="nav-link">
+                    <a href="{% url 'tracker:issue_list' view.kwargs.project %}" class="nav-link">
                         <i class="nav-icon fas fa-bug"></i> Project Tracker
-                    </a> {% endcomment %}
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
