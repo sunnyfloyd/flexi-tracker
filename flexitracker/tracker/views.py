@@ -17,6 +17,11 @@ class IssueDetailView(generic.DetailView):
     template_name = "tracker/issue_detail.html"
     model = Issue
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project_pk"] = Issue.objects.get(pk=self.kwargs["pk"]).project.pk
+        return context
+
 
 class IssueListView(generic.ListView):
     template_name = "tracker/issue_list.html"
@@ -24,14 +29,15 @@ class IssueListView(generic.ListView):
     paginate_by = 3
 
     def get_queryset(self):
-        project = get_object_or_404(Project, name__iexact=self.kwargs["project"])
-        return Issue.objects.filter(project=project)
+        # project = get_object_or_404(Project, name__iexact=self.kwargs["project"])
+        self.project = get_object_or_404(Project, pk=self.kwargs["pk"])
+        return Issue.objects.filter(project=self.project)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Adding projects
-        # context['projects'] = Project.objects.all()
+        # project name
+        context['project_name'] = self.project.name
 
         # Adding pagination
         per_page = context["paginator"].per_page
@@ -58,8 +64,9 @@ class IssueUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Issue
     # success_url = reverse_lazy("tracker:index")
 
+
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
-    template_name = 'tracker/new_project.html'
+    template_name = "tracker/new_project.html"
     form_class = ProjectForm
 
     def form_valid(self, form):
@@ -67,7 +74,8 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
         project.leader = self.request.user
         return super().form_valid(form)
 
+
 class ProjectEditView(LoginRequiredMixin, generic.UpdateView):
-    template_name = 'tracker/project_edit.html'
+    template_name = "tracker/project_edit.html"
     form_class = ProjectForm
     model = Project

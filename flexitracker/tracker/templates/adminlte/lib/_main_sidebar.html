@@ -2,26 +2,28 @@
 {% load static %}
 <!-- Left side column. contains the sidebar -->
 <aside class="main-sidebar sidebar-dark-primary  elevation-4">
-     <!-- Brand Logo -->
+    <!-- Brand Logo -->
     {% block logo %}
-        <a href="/" class="brand-link">
-            <img src="{%static 'admin-lte/dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-            {% block logo_text %}<span class="brand-text font-weight-light">AdminLTE 3 </span>{% endblock %}
-        </a>
+    <a href="/" class="brand-link">
+        <img src="{%static 'admin-lte/dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo"
+            class="brand-image img-circle elevation-3" style="opacity: .8">
+        {% block logo_text %}<span class="brand-text font-weight-light">AdminLTE 3 </span>{% endblock %}
+    </a>
     {% endblock %}
     <!-- sidebar: style can be found in sidebar.less -->
     <div class="sidebar">
         <!-- Sidebar user panel -->
         {% block user_panel %}
         <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="{% url 'account:dashboard' %}"
+                    class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
+            </div>
         </div>
-        <div class="info">
-          <a href="{% url 'account:dashboard' %}" class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
-        </div>
-      </div>
         {% endblock %}
 
         {% block form %}{% endblock %}
@@ -30,23 +32,25 @@
         {% block nav_links_ul %}
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-            {% block nav_links_outer %}
-            <li class="nav-header">PROJECTS</li>
+                {% block nav_links_outer %}
+                <li class="nav-header">PROJECTS</li>
 
-            {% block nav_links %}
+                {% block nav_links %}
                 {% comment %} <li class="nav-item has-tree-view ">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-object-group"></i> <p>Switch Projects</p>
+                        <i class="nav-icon fas fa-object-group"></i>
+                        <p>Switch Projects</p>
                         <p><i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview menu-open">
                         {% for project in projects %}
-                            <li class="nav-item">
-                                <a href="{{ project.get_absolute_url }}" class="nav-link {% if project.name == view.kwargs.project %}active{% endif %}">
-                                    <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ project.get_absolute_url }}"
+                                class="nav-link {% if project.name == view.kwargs.project %}active{% endif %}">
+                                <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
+                            </a>
+                        </li>
                         {% endfor %}
                         <li class="nav-item">
                             <a href="#" class="nav-link">
@@ -56,7 +60,8 @@
                     </ul>
                 </li> {% endcomment %}
                 <li class="nav-item">
-                    <a href="{% url 'tracker:new_project' %}" class="nav-link {% add_active 'tracker:new_project' %}">
+                    <a href="{% url 'tracker:new_project' %}"
+                        class="nav-link {% add_active 'tracker:new_project' %}">
                         <i class="nav-icon fas fa-plus"></i> Create New Project
                     </a>
                 </li>
@@ -66,18 +71,25 @@
                     </a>
                 </li>
                 {% for project in projects %}
-                    <li class="nav-item">
-                        <a href="{{ project.get_absolute_url }}" class="nav-link {% if project.name == view.kwargs.project %}active{% endif %}">
-                            <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
-                        </a>
-                    </li>
+                <li class="nav-item">
+                    <a href="{{ project.get_absolute_url }}"
+                        class="nav-link {% if project %}{% add_active 'tracker:issue_list' project.pk %}{% endif %}">
+                        {% comment %} class="nav-link {% if project.pk == view.kwargs.project_pk or project.pk == project_pk %}active{% endif %}"> {% endcomment %}
+                        <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
+                    </a>
+                </li>
                 {% endfor %}
 
                 <li class="nav-header">FUNCTIONS</li>
                 <li class="nav-item">
-                    <a href="{% url 'tracker:new_issue' %}" class="nav-link {% add_active 'tracker:new_issue' %}">
+                    <a href="{% url 'tracker:new_issue' %} " id="new-issue" data-toggle="modal" data-target="#exampleModal"
+                        class="nav-link {% add_active 'tracker:new_issue' %}">
                         <i class="nav-icon fas fa-bug"></i> Create Issue
                     </a>
+                    {% comment %} <a href="{% url 'tracker:new_issue' %}"
+                        class="nav-link {% add_active 'tracker:new_issue' %}">
+                        <i class="nav-icon fas fa-bug"></i> Create Issue
+                    </a> {% endcomment %}
                 </li>
                 <li class="nav-header">CUSTOM PROJECTS</li>
                 <li class="nav-item">
@@ -85,11 +97,31 @@
                         <i class="nav-icon fas fa-flask"></i> Customize New Project
                     </a>
                 </li>
-            {% endblock nav_links %}
-            {% endblock nav_links_outer %}
+                {% endblock nav_links %}
+                {% endblock nav_links_outer %}
             </ul>
-            </nav>
+        </nav>
         {% endblock nav_links_ul %}
     </div>
     <!-- /.sidebar -->
 </aside>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

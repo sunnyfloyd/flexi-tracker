@@ -36,7 +36,7 @@ class Project(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("tracker:issue_list", kwargs={"project": self.name})
+        return reverse("tracker:issue_list", kwargs={"pk": self.pk})
 
 
 class Issue(models.Model):
