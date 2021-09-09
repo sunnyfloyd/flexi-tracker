@@ -5,7 +5,7 @@
     <!-- Brand Logo -->
     {% block logo %}
     <a href="/" class="brand-link">
-        <img src="{%static 'admin-lte/dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo"
+        <img src="{% static 'admin-lte/dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo"
             class="brand-image img-circle elevation-3" style="opacity: .8">
         {% block logo_text %}<span class="brand-text font-weight-light">AdminLTE 3 </span>{% endblock %}
     </a>
@@ -82,7 +82,7 @@
 
                 <li class="nav-header">FUNCTIONS</li>
                 <li class="nav-item">
-                    <a href="{% url 'tracker:new_issue' %} " id="new-issue" data-toggle="modal" data-target="#exampleModal"
+                    <a href="{% url 'tracker:new_issue' %} " id="new-issue"
                         class="nav-link {% add_active 'tracker:new_issue' %}">
                         <i class="nav-icon fas fa-bug"></i> Create Issue
                     </a>
@@ -105,23 +105,3 @@
     </div>
     <!-- /.sidebar -->
 </aside>
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>

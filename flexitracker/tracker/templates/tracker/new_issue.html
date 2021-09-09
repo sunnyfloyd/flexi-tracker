@@ -1,23 +1,24 @@
 {% extends 'tracker/base.html' %}
 {% load crispy_forms_tags %}
 
+
+{% block page_name %}
+<div class="container">New Issue Form</div>
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card card-primary">
-                <div class="card-header">
-                    <h3 class="card-title">Create Issue</h3>
-                </div>
-                <!-- /.card-header -->
-                <!-- form start -->
-                <form action="{% url 'tracker:new_issue' %}" method="post" class="p-2">
-                    {{ form|crispy }}
-                    {% csrf_token %}
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </form>
-            </div>
+<div class="container">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Create Issue</h3>
         </div>
+        <!-- /.card-header -->
+        <!-- form start -->
+        <form action="{% url 'tracker:new_issue' %}" method="post" class="p-2">
+            {{ form|crispy }}
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
     </div>
 </div>
 {% endblock content %}
