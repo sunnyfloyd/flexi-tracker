@@ -56,8 +56,13 @@
                     </ul>
                 </li> {% endcomment %}
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{% url 'tracker:new_project' %}" class="nav-link {% add_active 'tracker:new_project' %}">
                         <i class="nav-icon fas fa-plus"></i> Create New Project
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'tracker:new_issue' %}" class="nav-link">
+                        <i class="nav-icon fas fa-cogs"></i> Manage Projects
                     </a>
                 </li>
                 {% for project in projects %}
@@ -70,13 +75,8 @@
 
                 <li class="nav-header">FUNCTIONS</li>
                 <li class="nav-item">
-                    <a href="{% url 'tracker:new_issue' %}" class="nav-link">
+                    <a href="{% url 'tracker:new_issue' %}" class="nav-link {% add_active 'tracker:new_issue' %}">
                         <i class="nav-icon fas fa-bug"></i> Create Issue
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'tracker:new_issue' %}" class="nav-link">
-                        <i class="nav-icon fas fa-cogs"></i> Manage Projects
                     </a>
                 </li>
                 <li class="nav-header">CUSTOM PROJECTS</li>

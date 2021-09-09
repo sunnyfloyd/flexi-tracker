@@ -3,7 +3,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from .models import Issue, Project
-from .forms import IssueForm
+from .forms import IssueForm, ProjectForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -41,7 +41,7 @@ class IssueListView(generic.ListView):
         return context
 
 
-class IssueFormView(LoginRequiredMixin, generic.CreateView):
+class IssueCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "tracker/new_issue.html"
     form_class = IssueForm
 
@@ -52,8 +52,22 @@ class IssueFormView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
 
-class IssueUpdateView(generic.UpdateView):
+class IssueUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "tracker/issue_edit.html"
     form_class = IssueForm
     model = Issue
     # success_url = reverse_lazy("tracker:index")
+
+class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
+    template_name = 'tracker/new_project.html'
+    form_class = ProjectForm
+
+    def form_valid(self, form):
+        project = form.save(commit=False)
+        project.leader = self.request.user
+        return super().form_valid(form)
+
+class ProjectEditView(LoginRequiredMixin, generic.UpdateView):
+    template_name = 'tracker/project_edit.html'
+    form_class = ProjectForm
+    model = Project

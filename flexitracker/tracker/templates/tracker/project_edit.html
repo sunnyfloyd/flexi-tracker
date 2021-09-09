@@ -1,0 +1,10 @@
+{% extends 'tracker/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form action="{% url 'tracker:project_edit' object.pk %}" method="post">
+    {{ form|crispy }}
+    {% csrf_token %}
+    <button class="btn btn-primary" type="submit">Submit</button>
+</form>
+{% endblock content %}
