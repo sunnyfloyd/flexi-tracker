@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import fields
 from django.db.models.fields import CharField
 from django.utils.translation import gettext as _
 from django.urls import reverse
@@ -29,6 +30,14 @@ class Project(models.Model):
         get_user_model(), blank=True, related_name="projects"
     )
     creation_date = models.DateTimeField(auto_now_add=True)
+    last_update = models.DateTimeField(auto_now=True)
+    last_update_by = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="recently_updated_projects",
+        blank=True,
+        null=True
+    )
 
     class Meta:
         ordering = ("-creation_date",)
@@ -40,16 +49,16 @@ class Project(models.Model):
         return reverse("tracker:issue_list", kwargs={"pk": self.pk})
 
     def get_progress(self):
-        completed_issues = self.issues.filter(status='done').count()
+        completed_issues = self.issues.filter(status="done").count()
         return completed_issues / self.issues.count() * 100 if completed_issues else 0
 
     def get_status(self):
         progress = self.get_progress()
         if progress == 100:
-            return 'success'
+            return "success"
         if progress > 50:
-            return 'warning'
-        return 'danger'
+            return "warning"
+        return "danger"
 
 
 class Issue(models.Model):
@@ -67,6 +76,13 @@ class Issue(models.Model):
     )
     creation_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
+    last_update_by = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="recently_updated_issues",
+        blank=True,
+        null=True
+    )
     ISSUE_TYPE_CHOICES = [
         ("issue", "Issue"),
         ("task", "Task"),
@@ -111,3 +127,19 @@ class Issue(models.Model):
 
     def get_absolute_url(self):
         return reverse("tracker:issue_detail", kwargs={"pk": self.pk})
+
+
+class Log(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="logs"
+    )
+    date = models.DateTimeField(auto_now_add=True)
+    LOG_ACTION_CHOICES = [("new", "New"), ("update", "Update")]
+    action = models.CharField(max_length=50, choices=LOG_ACTION_CHOICES)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="logs", blank=True
+    )
+    issue = models.ForeignKey(
+        Issue, on_delete=models.CASCADE, related_name="logs", blank=True
+    )
+    fields = models.CharField(max_length=200)

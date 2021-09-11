@@ -45,7 +45,7 @@
                 {% for project in object_list %}
                 <tr>
                     <td>
-                        <a>
+                        <a href="{{ project.get_absolute_url }}">
                             {{ project.name }}
                         </a>
                         <br>
@@ -76,12 +76,7 @@
                         <span class="badge badge-{{ project.get_status }}">{{ project.get_status|capfirst }}</span>
                     </td>
                     <td class="project-actions text-right">
-                        <a class="btn btn-primary btn-sm" href="{{ project.get_absolute_url }}">
-                            <i class="fas fa-folder">
-                            </i>
-                            View
-                        </a>
-                        <a class="btn btn-warning btn-sm" href="#">
+                        <a class="btn btn-primary btn-sm" href="#">
                             <i class="fas fa-folder">
                             </i>
                             Manage
