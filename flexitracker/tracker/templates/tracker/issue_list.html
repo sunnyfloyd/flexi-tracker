@@ -1,12 +1,18 @@
 {% extends 'tracker/base.html' %}
 
+{% block title %}{{ project_name|capfirst }} Tracker{% endblock %}
+
+{% block page_name %}
+<div class="container-fluid">Project Tracker</div>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ project_name|capfirst }} Items
+                    <h3 class="card-title">{{ project_name|capfirst }} Project Items
                     <small class="text-muted">[<a href="{% url 'tracker:project_edit' view.kwargs.pk %}">edit</a>]</small>
                     <small class="text-muted">[<a href="{% url 'tracker:project_edit' view.kwargs.pk %}">info</a>]</small>
                     </h3>

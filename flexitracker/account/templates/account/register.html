@@ -1,16 +1,26 @@
 {% extends 'tracker/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title_outer %}
-    <title>{% block title %}Register{% endblock %}</title>
+{% block title %}Register{% endblock %}
+
+{% block page_name %}
+<div class="container">Create New Account</div>
 {% endblock %}
 
 {% block content %}
-<form action={% url 'account:register' %} method="post">
-    {{ form|crispy }}
-    {% csrf_token %}
-    <div class="card-footer">
-        <button type="submit" class="btn btn-primary">Submit</button>
+<div class="container">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Register</h3>
+        </div>
+
+        <form action={% url 'account:register' %} method="post" class="p-2">
+            {{ form|crispy }}
+            {% csrf_token %}
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock %}

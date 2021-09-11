@@ -28,15 +28,28 @@ class Project(models.Model):
     members = models.ManyToManyField(
         get_user_model(), blank=True, related_name="projects"
     )
+    creation_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ("name",)
+        ordering = ("-creation_date",)
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse("tracker:issue_list", kwargs={"pk": self.pk})
+
+    def get_progress(self):
+        completed_issues = self.issues.filter(status='done').count()
+        return completed_issues / self.issues.count() * 100 if completed_issues else 0
+
+    def get_status(self):
+        progress = self.get_progress()
+        if progress == 100:
+            return 'success'
+        if progress > 50:
+            return 'warning'
+        return 'danger'
 
 
 class Issue(models.Model):

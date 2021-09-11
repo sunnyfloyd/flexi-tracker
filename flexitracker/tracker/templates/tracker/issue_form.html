@@ -1,6 +1,7 @@
 {% extends 'tracker/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title %}Issue Form{% endblock %}
 
 {% block page_name %}
 <div class="container">New Issue Form</div>
@@ -12,9 +13,15 @@
         <div class="card-header">
             <h3 class="card-title">Create Issue</h3>
         </div>
-        <!-- /.card-header -->
-        <!-- form start -->
-        <form action="{% url 'tracker:new_issue' %}" method="post" class="p-2">
+
+        <form action="
+        {% if object %}
+            {% url 'tracker:issue_edit' object.pk %}
+        {% else %}
+            {% url 'tracker:new_issue' %}
+        {% endif %}
+        "
+        method="post" class="p-2">
             {{ form|crispy }}
             {% csrf_token %}
             <button class="btn btn-primary" type="submit">Submit</button>
@@ -22,9 +29,3 @@
     </div>
 </div>
 {% endblock content %}
-
-{% comment %} <form action="{% url 'tracker:new_issue' %}" method="post">
-    {{ form|crispy }}
-    {% csrf_token %}
-    <button class="btn btn-primary" type="submit">Submit</button>
-</form> {% endcomment %}

@@ -1,0 +1,29 @@
+{% extends 'tracker/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Project Form{% endblock %}
+
+{% block page_name %}
+<div class="container">{% if object %}Edit{% else %}Create{% endif %} Project</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Project Form</h3>
+        </div>
+        <form action="
+        {% if object %}
+            {% url 'tracker:project_edit' object.pk %}
+        {% else %}
+            {% url 'tracker:new_project' %}
+        {% endif %}
+        " method="post" class='p-2'>
+            {{ form|crispy }}
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}
