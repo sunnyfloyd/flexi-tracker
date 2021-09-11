@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
 class IndexView(generic.TemplateView):
     template_name = "tracker/base.html"
 
@@ -36,7 +37,7 @@ class IssueListView(generic.ListView):
         context = super().get_context_data(**kwargs)
 
         # project name
-        context['project_name'] = self.project.name
+        context["project_name"] = self.project.name
 
         # Adding pagination
         per_page = context["paginator"].per_page
@@ -49,12 +50,12 @@ class IssueListView(generic.ListView):
 class IssueCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "tracker/issue_form.html"
     form_class = IssueForm
-    site_name = 'Issue Form'
+    site_name = "Issue Form"
 
     def form_valid(self, form):
         issue = form.save(commit=False)
         issue.creator = self.request.user
-        issue.save()
+        # issue.save()
         return super().form_valid(form)
 
 
@@ -65,21 +66,39 @@ class IssueUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Issue
     # success_url = reverse_lazy("tracker:index")
 
+    def form_valid(self, form):
+        issue = form.save(commit=False)
+        issue.last_update_by = self.request.user
+        # issue.save()
+        return super().form_valid(form)
+
+
 class ProjectListView(LoginRequiredMixin, generic.ListView):
-    template_name = 'tracker/project_list.html'
+    template_name = "tracker/project_list.html"
     model = Project
 
     def get_queryset(self):
         return Project.objects.filter(leader=self.request.user)
 
+
+class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name = "tracker/project_detail.html"
+    model = Project
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["project_pk"] = Issue.objects.get(pk=self.kwargs["pk"]).project.pk
+    #     return context
+
+
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "tracker/project_form.html"
     form_class = ProjectForm
-    
 
     def form_valid(self, form):
         project = form.save(commit=False)
         project.leader = self.request.user
+        # project.save()
         return super().form_valid(form)
 
 
@@ -88,6 +107,13 @@ class ProjectEditView(LoginRequiredMixin, generic.UpdateView):
     form_class = ProjectForm
     model = Project
 
+    def form_valid(self, form):
+        project = form.save(commit=False)
+        project.last_update_by = self.request.user
+        # project.save()
+        return super().form_valid(form)
+
+
 class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Project
-    success_url = reverse_lazy('tracker:project_list')
+    success_url = reverse_lazy("tracker:project_list")

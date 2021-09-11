@@ -65,18 +65,18 @@
                     <td class="project_progress">
                         <div class="progress progress-sm">
                             <div class="progress-bar bg-green" role="progressbar" aria-valuenow="57" aria-valuemin="0"
-                                aria-valuemax="100" style="width: {{ project.get_progress }}%">
+                                aria-valuemax="100" style="width: {{ project.progress }}%">
                             </div>
                         </div>
                         <small>
-                            {{ project.get_progress|floatformat:"0" }}% Complete
+                            {{ project.progress|floatformat:"0" }}% Complete
                         </small>
                     </td>
                     <td class="project-state">
-                        <span class="badge badge-{{ project.get_status }}">{{ project.get_status|capfirst }}</span>
+                        <span class="badge badge-{{ project.status }}">{{ project.status|capfirst }}</span>
                     </td>
                     <td class="project-actions text-right">
-                        <a class="btn btn-primary btn-sm" href="#">
+                        <a class="btn btn-primary btn-sm" href="{% url 'tracker:project_detail' project.pk %}">
                             <i class="fas fa-folder">
                             </i>
                             Manage

@@ -92,9 +92,9 @@
                                             <td>{{ issue.creator }}</td>
                                             <td>{{ issue.priority }}</td>
                                             <td>{{ issue.status }}</td>
-                                            <td>{{ issue.creation_date }}</td>
-                                            <td>{{ issue.last_update }}</td>
-                                            <td>{{ issue.due_date }}</td>
+                                            <td>{{ issue.creation_date|date:"d.m.Y" }}</td>
+                                            <td>{{ issue.last_update|date:"d.m.Y"  }}</td>
+                                            <td>{{ issue.due_date|date:"d.m.Y"  }}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>

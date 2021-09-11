@@ -36,7 +36,7 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         related_name="recently_updated_projects",
         blank=True,
-        null=True
+        null=True,
     )
 
     class Meta:
@@ -48,15 +48,30 @@ class Project(models.Model):
     def get_absolute_url(self):
         return reverse("tracker:issue_list", kwargs={"pk": self.pk})
 
-    def get_progress(self):
-        completed_issues = self.issues.filter(status="done").count()
-        return completed_issues / self.issues.count() * 100 if completed_issues else 0
+    @property
+    def open_issues(self):
+        return self.issues.count() - self.closed_issues
 
-    def get_status(self):
-        progress = self.get_progress()
-        if progress == 100:
+    @property
+    def closed_issues(self):
+        return self.issues.filter(status="done").count()
+
+    @property
+    def effort_spent(self):
+        agg = self.issues.all().aggregate(models.Sum('work_effort_actual'))
+        return agg['work_effort_actual__sum']
+
+    
+    @property
+    def progress(self):
+        closed_issues = self.closed_issues
+        return closed_issues / self.issues.count() * 100 if closed_issues else 0
+
+    @property
+    def status(self):
+        if self.progress == 100:
             return "success"
-        if progress > 50:
+        if self.progress > 50:
             return "warning"
         return "danger"
 
@@ -81,7 +96,7 @@ class Issue(models.Model):
         on_delete=models.CASCADE,
         related_name="recently_updated_issues",
         blank=True,
-        null=True
+        null=True,
     )
     ISSUE_TYPE_CHOICES = [
         ("issue", "Issue"),
@@ -134,12 +149,22 @@ class Log(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="logs"
     )
     date = models.DateTimeField(auto_now_add=True)
-    LOG_ACTION_CHOICES = [("new", "New"), ("update", "Update")]
+    LOG_ACTION_CHOICES = [("new", "New"), ("update", "Update"), ("delete", "Delete")]
     action = models.CharField(max_length=50, choices=LOG_ACTION_CHOICES)
+    
+    ##############################################################################
+    #                                    NOTE                                    #
+    ##############################################################################
+    # For both foreign keys in the Log model I decided to use 'models.CASCADE'.
+    # This will result in removal of all of the related logs. From the audit trail
+    # perspective this is not something that is desired. However, having scale of
+    # this project and perceived end-user's profile in mind I decided that any
+    # project/issue deletions will be concious decisions and therefore logging
+    # deletion action only should be sufficient risk mitigating measure.
     project = models.ForeignKey(
-        Project, on_delete=models.CASCADE, related_name="logs", blank=True
+        Project, on_delete=models.CASCADE, related_name="logs", blank=True, null=True
     )
     issue = models.ForeignKey(
-        Issue, on_delete=models.CASCADE, related_name="logs", blank=True
+        Issue, on_delete=models.CASCADE, related_name="logs", blank=True, null=True
     )
-    fields = models.CharField(max_length=200)
+    fields = models.CharField(max_length=200, blank=True, null=True)
