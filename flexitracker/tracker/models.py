@@ -168,3 +168,17 @@ class Log(models.Model):
         Issue, on_delete=models.CASCADE, related_name="logs", blank=True, null=True
     )
     fields = models.CharField(max_length=200, blank=True, null=True)
+
+    @property
+    def description(self):
+        action = 'Created' if self.action == 'new' else ('Updated' if self.action == 'update' else 'Deleted')
+        if self.project:
+            model = 'project'
+        elif self.issue:
+            model = 'issue'
+        else:
+            model = self.fields
+        return f'{action} {model}.'
+
+    class Meta:
+        ordering = ("-date",)
