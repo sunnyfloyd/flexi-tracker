@@ -11,4 +11,4 @@ class IssueForm(forms.ModelForm):
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        exclude = ('leader', 'last_update', 'last_update_by')
+        exclude = ('creator', 'last_update', 'last_update_by')

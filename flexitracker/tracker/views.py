@@ -78,7 +78,7 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
 
     def get_queryset(self):
-        return Project.objects.filter(leader=self.request.user)
+        return Project.objects.filter(creator=self.request.user)
 
 
 class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
@@ -97,7 +97,7 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         project = form.save(commit=False)
-        project.leader = self.request.user
+        project.creator = self.request.user
         # project.save()
         return super().form_valid(form)
 
@@ -117,3 +117,10 @@ class ProjectEditView(LoginRequiredMixin, generic.UpdateView):
 class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Project
     success_url = reverse_lazy("tracker:project_list")
+
+    def delete(self, request, *args, **kwargs):
+        pk = self.kwargs['pk']
+        project = Project.objects.get(pk=pk)
+        project.last_update_by = self.request.user
+        project.save()
+        return super().delete(request, *args, **kwargs)

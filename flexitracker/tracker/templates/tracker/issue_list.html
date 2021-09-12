@@ -86,12 +86,12 @@
                                     <tbody>
                                     {% for issue in page_obj %}
                                         <tr class="{% cycle 'odd' 'even' %}">
-                                            <td>{{ issue.issue_type }}</td>
+                                            <td>{{ issue.get_issue_type_display }}</td>
                                             <td><a href="{% url 'tracker:issue_detail' issue.pk %}">{{ issue.name }}</a></td>
-                                            <td>{{ issue.assignee }}</td>
-                                            <td>{{ issue.creator }}</td>
-                                            <td>{{ issue.priority }}</td>
-                                            <td>{{ issue.status }}</td>
+                                            <td><a href="#">{{ issue.assignee }}</a></td>
+                                            <td><a href="#">{{ issue.creator }}</a></td>
+                                            <td>{{ issue.get_priority_display }}</td>
+                                            <td>{{ issue.get_status_display }}</td>
                                             <td>{{ issue.creation_date|date:"d.m.Y" }}</td>
                                             <td>{{ issue.last_update|date:"d.m.Y"  }}</td>
                                             <td>{{ issue.due_date|date:"d.m.Y"  }}</td>

@@ -45,7 +45,7 @@
                 {% for project in object_list %}
                 <tr>
                     <td>
-                        <a href="{{ project.get_absolute_url }}">
+                        <a href="{% url 'tracker:project_detail' project.pk %}">
                             {{ project.name }}
                         </a>
                         <br>
@@ -76,10 +76,10 @@
                         <span class="badge badge-{{ project.status }}">{{ project.status|capfirst }}</span>
                     </td>
                     <td class="project-actions text-right">
-                        <a class="btn btn-primary btn-sm" href="{% url 'tracker:project_detail' project.pk %}">
+                        <a class="btn btn-primary btn-sm" href="{{ project.get_absolute_url }}">
                             <i class="fas fa-folder">
                             </i>
-                            Manage
+                            View Tracker
                         </a>
                         <a class="btn btn-info btn-sm" href="{% url 'tracker:project_edit' project.pk %}">
                             <i class="fas fa-pencil-alt">

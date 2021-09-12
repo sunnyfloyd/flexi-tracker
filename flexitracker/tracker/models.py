@@ -1,29 +1,16 @@
 from django.db import models
-from django.db.models import fields
+from django.db.models import Q
 from django.db.models.fields import CharField
 from django.utils.translation import gettext as _
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 
-# class Team(models.Model):
-
-#     name = CharField(max_length=50)
-#     leader = models.ForeignKey(
-#         get_user_model(), on_delete=models.CASCADE, related_name="leading"
-#     )
-
-#     def __str__(self):
-#         return self.name
-
-#     # def get_absolute_url(self):
-#     #     return reverse('team_detail', kwargs={'pk': self.pk})
-
-
 class Project(models.Model):
 
     name = models.CharField(max_length=50, unique=True)
-    leader = models.ForeignKey(
+    description = models.CharField(max_length=1500, default="No description provided.")
+    creator = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="created_projects"
     )
     members = models.ManyToManyField(
@@ -57,11 +44,10 @@ class Project(models.Model):
         return self.issues.filter(status="done").count()
 
     @property
-    def effort_spent(self):
-        agg = self.issues.all().aggregate(models.Sum('work_effort_actual'))
-        return agg['work_effort_actual__sum']
+    def work_effort_actual(self):
+        agg = self.issues.all().aggregate(models.Sum("work_effort_actual"))
+        return agg["work_effort_actual__sum"]
 
-    
     @property
     def progress(self):
         closed_issues = self.closed_issues
@@ -141,7 +127,13 @@ class Issue(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("tracker:issue_detail", kwargs={"pk": self.pk})
+        return reverse("tracker:issue_detail", kwargs={"pk": self.pk})\
+
+    @property
+    def contributors(self):
+        queryset = Issue.objects.get(pk=self.pk).logs.all().values('user')
+        users_pk = {obj['user'] for obj in queryset}
+        return get_user_model().objects.filter(pk__in=users_pk)
 
 
 class Log(models.Model):
@@ -149,9 +141,13 @@ class Log(models.Model):
         get_user_model(), on_delete=models.CASCADE, related_name="logs"
     )
     date = models.DateTimeField(auto_now_add=True)
-    LOG_ACTION_CHOICES = [("new", "New"), ("update", "Update"), ("delete", "Delete")]
+    LOG_ACTION_CHOICES = [
+        ("create", "Created"),
+        ("update", "Update"),
+        ("delete", "Delete"),
+    ]
     action = models.CharField(max_length=50, choices=LOG_ACTION_CHOICES)
-    
+
     ##############################################################################
     #                                    NOTE                                    #
     ##############################################################################
@@ -167,18 +163,19 @@ class Log(models.Model):
     issue = models.ForeignKey(
         Issue, on_delete=models.CASCADE, related_name="logs", blank=True, null=True
     )
-    fields = models.CharField(max_length=200, blank=True, null=True)
-
-    @property
-    def description(self):
-        action = 'Created' if self.action == 'new' else ('Updated' if self.action == 'update' else 'Deleted')
-        if self.project:
-            model = 'project'
-        elif self.issue:
-            model = 'issue'
-        else:
-            model = self.fields
-        return f'{action} {model}.'
+    removed_object = models.CharField(max_length=200, blank=True, default="")
 
     class Meta:
         ordering = ("-date",)
+
+    @property
+    def description(self):
+        related_object = (
+            "issue"
+            if self.issue
+            else ("project" if self.project else self.removed_object.split(";")[0])
+        )
+        removed_object = (
+            f" {self.removed_object.split(';')[1]}." if self.removed_object else ""
+        )
+        return f"{self.action.capitalize()}d {related_object}{removed_object}."
