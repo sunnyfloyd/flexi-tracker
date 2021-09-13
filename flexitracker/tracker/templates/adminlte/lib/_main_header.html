@@ -148,7 +148,7 @@
         <li class="user-body">
           <div class="row">
             <div class="col-6 text-center">
-              <a href="{% url 'account:dashboard' %}">Profile</a>
+              <a href="{% url 'account:profile' request.user.pk %}">Profile</a>
             </div>
             <div class="col-6 text-center">
               <a href="#">Team</a>

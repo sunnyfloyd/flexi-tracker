@@ -127,12 +127,12 @@ class Issue(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("tracker:issue_detail", kwargs={"pk": self.pk})\
+        return reverse("tracker:issue_detail", kwargs={"pk": self.pk})
 
     @property
     def contributors(self):
-        queryset = Issue.objects.get(pk=self.pk).logs.all().values('user')
-        users_pk = {obj['user'] for obj in queryset}
+        queryset = Issue.objects.get(pk=self.pk).logs.all().values("user")
+        users_pk = {obj["user"] for obj in queryset}
         return get_user_model().objects.filter(pk__in=users_pk)
 
 
@@ -171,11 +171,29 @@ class Log(models.Model):
     @property
     def description(self):
         related_object = (
-            "issue"
+            # "issue"
+            f"issue"
             if self.issue
             else ("project" if self.project else self.removed_object.split(";")[0])
         )
         removed_object = (
-            f" {self.removed_object.split(';')[1]}." if self.removed_object else ""
+            f" '{self.removed_object.split(';')[1]}'" if self.removed_object else ""
+        )
+        return f"{self.action.capitalize()}d {related_object}{removed_object}."
+
+    @property
+    def description_timeline(self):
+        related_object = (
+            # "issue"
+            f"issue: <a href='{self.issue.get_absolute_url()}'>{self.issue.name}</a>"
+            if self.issue
+            else (
+                f"project: <a href='{self.project.get_absolute_url()}'>{self.project.name}</a>"
+                if self.project
+                else self.removed_object.split(";")[0]
+            )
+        )
+        removed_object = (
+            f" '{self.removed_object.split(';')[1]}'" if self.removed_object else ""
         )
         return f"{self.action.capitalize()}d {related_object}{removed_object}."

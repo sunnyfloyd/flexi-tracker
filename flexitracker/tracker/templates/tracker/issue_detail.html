@@ -30,7 +30,7 @@
                             <div class="info-box-content">
                                 <span class="info-box-text text-center text-muted">Assignee</span>
                                 <span class="info-box-number text-center text-muted mb-0"><a
-                                        href="#">{{ object.assignee }}</a></span>
+                                        href="{{ object.assignee.profile.get_absolute_url }}">{{ object.assignee }}</a></span>
                             </div>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                                 <img class="img-circle img-bordered-sm" src="{% avatar_url size=128 user=log.user %}"
                                     alt="user image">
                                 <span class="username">
-                                    <a href="#">{{ log.user.username }}</a>
+                                    <a href="{{ log.user.profile.get_absolute_url }}">{{ log.user.username }}</a>
                                 </span>
                                 <span class="description">{{ log.date|date:"d.m.Y H:i" }}</span>
                             </div>
@@ -108,17 +108,30 @@
                     {{ object.description }}
                 </p>
                 <br>
-                <div class="text-muted">
-                    <p class="text-sm">Issue Creator
-                        <a href="#"><b class="d-block">{{ object.creator }}</b></a>
-                    </p>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="text-muted">
+                            <p class="text-sm">Issue Creator
+                                <a href="{{ object.creator.profile.get_absolute_url }}"><b
+                                        class="d-block">{{ object.creator }}</b></a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-muted">
+                            <p class="text-sm">Project
+                                <a href="{{ object.project.get_absolute_url }}"><b
+                                        class="d-block">{{ object.project.name }}</b></a>
+                            </p>
+                        </div>
+                    </div>
                 </div>
-
                 <h5 class="mt-5 text-muted">Contributors</h5>
                 <ul class="list-unstyled">
                     {% for contributor in object.contributors %}
                     <li>
-                        <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-user"></i>
+                        <a href="{{ contributor.profile.get_absolute_url }}" class="btn-link text-secondary"><i
+                                class="far fa-fw fa-user"></i>
                             {{ contributor.username }}</a>
                     </li>
                     {% endfor %}
@@ -127,12 +140,14 @@
                 <ul class="list-unstyled">
                     {% for issue in object.child_tasks.all %}
                     <li>
-                        <a href="{% url 'tracker:issue_detail' issue.pk %}" class="btn-link text-secondary"><i class="far fa-fw fa-user"></i>
+                        <a href="{% url 'tracker:issue_detail' issue.pk %}" class="btn-link text-secondary"><i
+                                class="far fa-fw fa-user"></i>
                             {{ issue.name }}</a>
                     </li>
                     {% endfor %}
                 </ul>
                 <div class="text-center mt-5 mb-3">
+                    <a href="#" class="btn btn-sm btn-info">Start Timer</a>
                     <a href="{% url 'tracker:issue_edit' object.pk %}" class="btn btn-sm btn-primary">Edit</a>
                     <a href="{% url 'tracker:project_delete' object.pk %}" class="btn btn-sm btn-danger">Delete</a>
                 </div>

@@ -1,9 +1,9 @@
 {% extends 'tracker/base.html' %}
 
-{% block title %}{{ project.name|capfirst }} Tracker{% endblock %}
+{% block title %}Your Dashboard{% endblock %}
 
 {% block page_name %}
-<div class="container-fluid">Project Tracker</div>
+<div class="container-fluid">Your Dashboard</div>
 {% endblock %}
 
 {% block content %}
@@ -12,9 +12,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ project.name|capfirst }} Project Items
-                        <small class="text-muted">[<a href="{% url 'tracker:project_detail' project.pk %}">view</a>]</small>
-                    </h3>
+                    <h3 class="card-title">Open Issues Assigned to You</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -61,7 +59,7 @@
                                             <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
                                                 colspan="1"
                                                 aria-label="Engine version: activate to sort column ascending">
-                                                Assignee</th>
+                                                Project</th>
                                             <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
                                                 colspan="1" aria-label="CSS grade: activate to sort column ascending">
                                                 Creator</th>
@@ -89,7 +87,7 @@
                                             <td><a href="{% url 'tracker:issue_detail' issue.pk %}">{{ issue.name }}</a>
                                             </td>
                                             <td><a
-                                                    href="{{ issue.assignee.profile.get_absolute_url }}">{{ issue.assignee }}</a>
+                                                    href="{{ issue.project.get_absolute_url }}">{{ issue.project.name }}</a>
                                             </td>
                                             <td><a
                                                     href="{{ issue.creator.profile.get_absolute_url }}">{{ issue.creator }}</a>

@@ -62,7 +62,7 @@
                                 <img class="img-circle img-bordered-sm" src="{% avatar_url size=128 user=log.user %}"
                                     alt="user image">
                                 <span class="username">
-                                    <a href="#">{{ log.user.username }}</a>
+                                    <a href="{{ log.user.profile.get_absolute_url }}">{{ log.user.username }}</a>
                                 </span>
                                 <span class="description">{{ log.date|date:"d.m.Y H:i" }}</span>
                             </div>
@@ -83,7 +83,8 @@
                 <br>
                 <div class="text-muted">
                     <p class="text-sm">Project Leader
-                        <a href="#"><b class="d-block">{{ object.creator }}</b></a>
+                        <a href="{{ object.creator.profile.get_absolute_url }}"><b
+                                class="d-block">{{ object.creator }}</b></a>
                     </p>
                 </div>
 
@@ -91,7 +92,8 @@
                 <ul class="list-unstyled">
                     {% for member in object.members.all %}
                     <li>
-                        <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-user"></i>
+                        <a href="{{ member.profile.get_absolute_url }}" class="btn-link text-secondary"><i
+                                class="far fa-fw fa-user"></i>
                             {{ member.username }}</a>
                     </li>
                     {% endfor %}

@@ -14,16 +14,18 @@
     <div class="sidebar">
         <!-- Sidebar user panel -->
         {% block user_panel %}
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
+            {% if request.user.is_authenticated %}
+            <!-- Sidebar user panel (optional) -->
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                <div class="image">
+                    <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
+                </div>
+                <div class="info">
+                    <a href="{% url 'account:profile' request.user.pk %}"
+                        class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
+                </div>
             </div>
-            <div class="info">
-                <a href="{% url 'account:dashboard' %}"
-                    class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
-            </div>
-        </div>
+            {% endif %}
         {% endblock %}
 
         {% block form %}{% endblock %}
@@ -36,29 +38,6 @@
                 <li class="nav-header">PROJECTS</li>
 
                 {% block nav_links %}
-                {% comment %} <li class="nav-item has-tree-view ">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-object-group"></i>
-                        <p>Switch Projects</p>
-                        <p><i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview menu-open">
-                        {% for project in projects %}
-                        <li class="nav-item">
-                            <a href="{{ project.get_absolute_url }}"
-                                class="nav-link {% if project.name == view.kwargs.project %}active{% endif %}">
-                                <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
-                            </a>
-                        </li>
-                        {% endfor %}
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-plus"></i> Create New Project
-                            </a>
-                        </li>
-                    </ul>
-                </li> {% endcomment %}
                 <li class="nav-item">
                     <a href="{% url 'tracker:new_project' %}"
                         class="nav-link {% add_active 'tracker:new_project' %}">

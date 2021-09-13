@@ -57,7 +57,7 @@
                         <ul class="list-inline">
                             {% for member in project.members.all %}
                             <li class="list-inline-item">
-                                <img alt="Avatar" class="table-avatar" src="{% avatar_url size=90 user=member %}">
+                                <a href="{{ member.profile.get_absolute_url }}"><img alt="Avatar" class="table-avatar" src="{% avatar_url size=90 user=member %}"></a>
                             </li>
                             {% endfor %}
                         </ul>
