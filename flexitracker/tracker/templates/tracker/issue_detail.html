@@ -125,10 +125,10 @@
                 </ul>
                 <h5 class="mt-5 text-muted">Child Tasks</h5>
                 <ul class="list-unstyled">
-                    {% for member in object.members.all %}
+                    {% for issue in object.child_tasks.all %}
                     <li>
-                        <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-user"></i>
-                            {{ member.username }}</a>
+                        <a href="{% url 'tracker:issue_detail' issue.pk %}" class="btn-link text-secondary"><i class="far fa-fw fa-user"></i>
+                            {{ issue.name }}</a>
                     </li>
                     {% endfor %}
                 </ul>

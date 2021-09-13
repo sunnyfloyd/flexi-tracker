@@ -29,34 +29,3 @@ def log_deletion(instance, **kwargs):
             action="delete",
             removed_object=f"{type(instance).__name__};{instance.name}".lower(),
         )
-
-# @receiver(post_save)
-# def log_action(instance, created, **kwargs):
-#     if any(isinstance(instance, m) for m in MODELS.values()):
-#         action = "new" if created else "update"
-#         linked_model = {
-#             k: instance for k, v in MODELS.items() if isinstance(instance, v)
-#         }
-
-#         # this logic could be removed if uniform naming for user foreignkey
-#         # of in-scope models was implemented (to be done in the final project phase)
-#         if isinstance(instance, Project):
-#             Log.objects.create(user=instance.creator, action=action, **linked_model)
-#         elif isinstance(instance, Issue):
-#             Log.objects.create(user=instance.creator, action=action, **linked_model)
-
-
-# @receiver(post_delete)
-# def log_deletion(instance, **kwargs):
-#     if any(isinstance(instance, m) for m in MODELS.values()):
-#         linked_model = {
-#             k: instance for k, v in MODELS.items() if isinstance(instance, v)
-#         }
-#         if isinstance(instance, Project):
-#             Log.objects.create(
-#                 user=instance.creator, action="delete", removed_object=instance.name
-#             )
-#         elif isinstance(instance, Issue):
-#             Log.objects.create(
-#                 user=instance.creator, action="delete", removed_object=instance.name
-#             )
