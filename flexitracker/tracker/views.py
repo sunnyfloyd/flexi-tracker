@@ -12,6 +12,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.exceptions import BadRequest, PermissionDenied
 from django.utils import timezone
 from django.http import JsonResponse
+import json
 
 
 class IndexView(generic.ListView):
@@ -135,8 +136,11 @@ class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 @login_required
 @require_http_methods(["POST"])
-def time_tracker(request, pk, action):
+def time_tracker(request, pk):
     issue = get_object_or_404(Issue, pk=pk)
+    data = json.loads(request.body)
+    action = data["action"]
+
     if action.lower() == "start":
         if request.user.profile.has_running_timer:
             raise PermissionDenied("You cannot have multiple running time trackers.")
@@ -144,7 +148,6 @@ def time_tracker(request, pk, action):
         return JsonResponse({"message": "Timer has successfully started."}, status=201)
 
     if action.lower() == "stop":
-        # te = request.user.profile.time_entries.get(user=request.user, issue=issue, end_time=None)
         time_entry = get_object_or_404(
             request.user.time_entries,
             user=request.user,

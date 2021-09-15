@@ -13,4 +13,6 @@
 
 {% endblock %}
 
-{% comment %} {% block extra_js %}{% endblock %} {% endcomment %}
+{% block extra_js %}
+    <script src="{% static 'scripts/time_tracker.js' %}"></script>
+{% endblock %}

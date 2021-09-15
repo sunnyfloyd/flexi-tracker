@@ -147,19 +147,16 @@
                     {% endfor %}
                 </ul>
                 <div class="text-center mt-5 mb-3">
-                    {% if request.user.profile.has_running_timer == None %}
-                    <form action="{% url 'tracker:time_tracker' object.pk 'start' %}" method="POST">
-                        {% csrf_token %}
-                        <button class="btn btn-sm btn-info">Start Timer</button>
-                    </form>
-                    {% elif request.user.profile.has_running_timer == object.pk %}
-                    <form action="{% url 'tracker:time_tracker' object.pk 'stop' %}" method="POST">
-                        {% csrf_token %}
-                        <button class="btn btn-sm btn-warning">Stop Timer</button>
-                    </form>
-                    {% else %}
-                    <button class="btn btn-sm btn-info" disabled>Start Timer2</button>
-                    {% endif %}
+                    <button id="timer-control"
+                        class="btn btn-sm {% if request.user.profile.has_running_timer == object.pk %}btn-warning{% else  %}btn-info{% endif %}"
+                        data-pk={{ object.pk }} data-running-timer={{ request.user.profile.has_running_timer }}
+                        {% if request.user.profile.has_running_timer and request.user.profile.has_running_timer != object.pk %}disabled{% endif %}>
+                        {% if request.user.profile.has_running_timer == object.pk %}
+                        Stop Timer
+                        {% else %}
+                        Start Timer
+                        {% endif %}
+                    </button>
                     <a href="{% url 'tracker:issue_edit' object.pk %}" class="btn btn-sm btn-primary">Edit</a>
                     <a href="{% url 'tracker:project_delete' object.pk %}" class="btn btn-sm btn-danger">Delete</a>
                 </div>

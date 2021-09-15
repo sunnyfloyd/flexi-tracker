@@ -4,6 +4,8 @@ from .models import Project, Issue, Log
 
 MODELS = (Project, Issue)
 
+# should probably add a new function for TimeEntry
+
 # Django UpdateView does not handle object updates via 'update_fields'.
 # If I wanted to log which fields have been updated for update actions
 # I would need to compare in-memory field value against the one in DB
