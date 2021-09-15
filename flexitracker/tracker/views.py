@@ -1,12 +1,17 @@
+from django.contrib.auth import decorators
 from django.http import request
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
-from .models import Issue, Project
+from .models import Issue, Project, TimeEntry
 from .forms import IssueForm, ProjectForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.http import require_http_methods
+from django.core.exceptions import BadRequest, PermissionDenied
+from django.utils import timezone
+from django.http import JsonResponse
 
 
 class IndexView(generic.ListView):
@@ -126,3 +131,29 @@ class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
         project.last_update_by = self.request.user
         project.save()
         return super().delete(request, *args, **kwargs)
+
+
+@login_required
+@require_http_methods(["POST"])
+def time_tracker(request, pk, action):
+    issue = get_object_or_404(Issue, pk=pk)
+    if action.lower() == "start":
+        if request.user.profile.has_running_timer:
+            raise PermissionDenied("You cannot have multiple running time trackers.")
+        TimeEntry.objects.create(user=request.user, issue=issue)
+        return JsonResponse({"message": "Timer has successfully started."}, status=201)
+
+    if action.lower() == "stop":
+        # te = request.user.profile.time_entries.get(user=request.user, issue=issue, end_time=None)
+        time_entry = get_object_or_404(
+            request.user.time_entries,
+            user=request.user,
+            issue=issue,
+            end_time=None,
+        )
+        time_entry.end_time = timezone.now()
+        time_entry.save()
+        return JsonResponse({"message": "Timer has successfully stopped."}, status=200)
+
+    else:
+        return BadRequest("Requested action is not recognized.")

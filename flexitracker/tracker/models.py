@@ -4,6 +4,7 @@ from django.db.models.fields import CharField
 from django.utils.translation import gettext as _
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from .utils import get_work_effort
 
 
 class Project(models.Model):
@@ -45,8 +46,10 @@ class Project(models.Model):
 
     @property
     def work_effort_actual(self):
-        agg = self.issues.all().aggregate(models.Sum("work_effort_actual"))
-        return agg["work_effort_actual__sum"]
+        queryset = TimeEntry.objects.filter(
+            Q(issue__in=self.issues.all()), ~Q(end_time=None)
+        )
+        return get_work_effort(queryset)
 
     @property
     def progress(self):
@@ -112,7 +115,7 @@ class Issue(models.Model):
         choices=ISSUE_STATUS_CHOICES, max_length=20, default="to_do"
     )
     work_effort_estimate = models.IntegerField()
-    work_effort_actual = models.IntegerField(default=0)
+    # work_effort_actual = models.IntegerField(default=0)
     due_date = models.DateTimeField()
     child_tasks = models.ManyToManyField(
         "self", symmetrical=False, blank=True, related_name="parent_tasks"
@@ -134,6 +137,11 @@ class Issue(models.Model):
         queryset = Issue.objects.get(pk=self.pk).logs.all().values("user")
         users_pk = {obj["user"] for obj in queryset}
         return get_user_model().objects.filter(pk__in=users_pk)
+
+    @property
+    def work_effort_actual(self):
+        queryset = TimeEntry.objects.filter(Q(issue=self), ~Q(end_time=None))
+        return get_work_effort(queryset)
 
 
 class Log(models.Model):
@@ -197,3 +205,25 @@ class Log(models.Model):
             f" '{self.removed_object.split(';')[1]}'" if self.removed_object else ""
         )
         return f"{self.action.capitalize()}d {related_object}{removed_object}."
+
+
+class TimeEntry(models.Model):
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="time_entries"
+    )
+    issue = models.ForeignKey(
+        Issue, on_delete=models.CASCADE, related_name="time_entries"
+    )
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ("-start_time",)
+
+    @property
+    def is_active(self):
+        return self.end_time is None
+
+    @property
+    def work_effort(self):
+        return (self.end_time - self.start_time).total_seconds()
