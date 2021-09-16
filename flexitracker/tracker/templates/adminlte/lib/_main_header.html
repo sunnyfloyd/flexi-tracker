@@ -41,6 +41,9 @@
 
     {% if request.user.is_authenticated %}
     <!-- Messages Dropdown Menu -->
+    <li id="timer-item" class="nav-item {% if not request.user.profile.has_running_timer %}timer-hidden{% endif %}">
+      <a class="nav-link" href="#"><i class="far fa-stop-circle"></i> <span id="timer-widget">00:00:00</span></a>
+    </li>
     <li class="nav-item dropdown">
       <a class="nav-link" data-toggle="dropdown" href="#">
         <i class="far fa-comments"></i>
@@ -50,8 +53,7 @@
         <a href="#" class="dropdown-item">
           <!-- Message Start -->
           <div class="media">
-            <img src="{% avatar_url 128 %}" alt="User Avatar"
-              class="img-size-50 mr-3 img-circle">
+            <img src="{% avatar_url 128 %}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
             <div class="media-body">
               <h3 class="dropdown-item-title">
                 Brad Diesel
@@ -67,8 +69,7 @@
         <a href="#" class="dropdown-item">
           <!-- Message Start -->
           <div class="media">
-            <img src="{% avatar_url 128 %}" alt="User Avatar"
-              class="img-size-50 img-circle mr-3">
+            <img src="{% avatar_url 128 %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
             <div class="media-body">
               <h3 class="dropdown-item-title">
                 John Pierce
@@ -84,8 +85,7 @@
         <a href="#" class="dropdown-item">
           <!-- Message Start -->
           <div class="media">
-            <img src="{% avatar_url 128 %}" alt="User Avatar"
-              class="img-size-50 img-circle mr-3">
+            <img src="{% avatar_url 128 %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
             <div class="media-body">
               <h3 class="dropdown-item-title">
                 Nora Silvester

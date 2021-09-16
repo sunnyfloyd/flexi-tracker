@@ -137,26 +137,73 @@ class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
 @login_required
 @require_http_methods(["POST"])
 def time_tracker(request, pk):
-    issue = get_object_or_404(Issue, pk=pk)
+    issue = Issue.objects.get(pk=pk)
+    if not issue:
+        return JsonResponse({"message": "There is no issue with this ID."}, status=404)
     data = json.loads(request.body)
     action = data["action"]
 
     if action.lower() == "start":
         if request.user.profile.has_running_timer:
-            raise PermissionDenied("You cannot have multiple running time trackers.")
+            return JsonResponse(
+                {"message": "You cannot have multiple running time trackers."},
+                status=403,
+            )
         TimeEntry.objects.create(user=request.user, issue=issue)
-        return JsonResponse({"message": "Timer has successfully started."}, status=201)
-
-    if action.lower() == "stop":
-        time_entry = get_object_or_404(
-            request.user.time_entries,
-            user=request.user,
-            issue=issue,
-            end_time=None,
+        return JsonResponse(
+            {"work_effort_actual": issue.work_effort_actual}, status=200
         )
-        time_entry.end_time = timezone.now()
-        time_entry.save()
-        return JsonResponse({"message": "Timer has successfully stopped."}, status=200)
 
+    if action.lower() != "stop":
+        return JsonResponse(
+            {"work_effort_actual": "Requested action is not recognized."}, status=400
+        )
+
+    time_entry = request.user.time_entries.get(
+        user=request.user, issue=issue, end_time=None
+    )
+    if not time_entry:
+        return JsonResponse(
+            {"message": "Current user does not have a running timer."}, status=404
+        )
+    time_entry.end_time = timezone.now()
+    time_entry.save()
+    return JsonResponse({"work_effort_actual": issue.work_effort_actual}, status=200)
+
+
+# @login_required
+@require_http_methods(["GET"])
+def get_user_timer_effort(request):
+    if request.user.profile.has_running_timer:
+        time_entry = request.user.time_entries.get(user=request.user, end_time=None)
+        return JsonResponse({"work_effort": time_entry.work_effort}, status=200)
     else:
-        return BadRequest("Requested action is not recognized.")
+        return JsonResponse(
+            {"message": "Current user does not have a running timer."}, status=200
+        )
+
+
+# def time_tracker(request, pk):
+#     issue = get_object_or_404(Issue, pk=pk)
+#     data = json.loads(request.body)
+#     action = data["action"]
+
+#     if action.lower() == "start":
+#         if request.user.profile.has_running_timer:
+#             raise PermissionDenied("You cannot have multiple running time trackers.")
+#         TimeEntry.objects.create(user=request.user, issue=issue)
+#         return JsonResponse({"message": "Timer has successfully started."}, status=201)
+
+#     if action.lower() == "stop":
+#         time_entry = get_object_or_404(
+#             request.user.time_entries,
+#             user=request.user,
+#             issue=issue,
+#             end_time=None,
+#         )
+#         time_entry.end_time = timezone.now()
+#         time_entry.save()
+#         return JsonResponse({"message": "Timer has successfully stopped."}, status=200)
+
+#     else:
+#         return BadRequest("Requested action is not recognized.")

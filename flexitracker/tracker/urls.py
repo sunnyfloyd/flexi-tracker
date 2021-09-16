@@ -13,6 +13,13 @@ urlpatterns = [
     path("projects/", views.ProjectListView.as_view(), name="project_list"),
     path("new_project/", views.ProjectCreateView.as_view(), name="new_project"),
     path("project/<int:pk>/", views.ProjectDetailView.as_view(), name="project_detail"),
-    path('project/<int:pk>/edit/', views.ProjectEditView.as_view(), name='project_edit'),
-    path('project/<int:pk>/delete/', views.ProjectDeleteView.as_view(), name='project_delete'),
+    path(
+        "project/<int:pk>/edit/", views.ProjectEditView.as_view(), name="project_edit"
+    ),
+    path(
+        "project/<int:pk>/delete/",
+        views.ProjectDeleteView.as_view(),
+        name="project_delete",
+    ),
+    path("user_timer_effort/", views.get_user_timer_effort, name="user_timer_effort"),
 ]

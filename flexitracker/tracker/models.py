@@ -226,4 +226,4 @@ class TimeEntry(models.Model):
 
     @property
     def work_effort(self):
-        return (self.end_time - self.start_time).total_seconds()
+        return (self.end_time - self.start_time).total_seconds() if self.end_time else 0
