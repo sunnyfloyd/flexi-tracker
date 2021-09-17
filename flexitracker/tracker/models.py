@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .utils import get_work_effort
+from django.utils import timezone
 
 
 class Project(models.Model):
@@ -226,4 +227,8 @@ class TimeEntry(models.Model):
 
     @property
     def work_effort(self):
-        return (self.end_time - self.start_time).total_seconds() if self.end_time else 0
+        return (
+            (self.end_time - self.start_time).total_seconds()
+            if self.end_time
+            else (timezone.now() - self.start_time).total_seconds()
+        )

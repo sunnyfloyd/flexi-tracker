@@ -1,13 +1,43 @@
 document.addEventListener("DOMContentLoaded", onMount);
 
 function onMount() {
-    let timer = document.querySelector("#timer-control");
-    timer.addEventListener("click", setUpTimer);
+    let timerControl = document.querySelector("#timer-control");
+    if (timerControl !== null) {
+        timerControl.addEventListener("click", setUpTimer);
+    }
+    showTime();
+    let timerLink = document.querySelector("#timer-link");
+    timerLink.addEventListener("click", setUpMiniTimer);
+}
 
+async function setUpMiniTimer() {
+    let runningTimerPk = this.dataset.runningTimer === "None" ? null : this.dataset.runningTimer;
+    let action = "stop";
+
+    response = await fetch(`http://${window.location.host}/issue/${runningTimerPk}/time_tracker/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRF()
+        },
+        body: JSON.stringify({
+            action: action
+        })
+    });
+
+    let data = await response.json();
+
+    let workEffort = document.querySelector("#work-effort");
     let timerItem = document.querySelector("#timer-item");
-    if (!Object.values(timerItem.classList).includes("timer-hidden")) {
-        console.log("timer not hidden!");
-        showTime();
+    let timerControl = document.querySelector("#timer-control");
+    
+    timerItem.classList.toggle("timer-hidden");
+
+    if (timerControl !== null) {
+        workEffort.innerHTML = data.work_effort_actual;
+        timerControl.innerHTML = "Start Timer";
+        timerControl.dataset.runningTimer = "None";
+        timerControl.classList.toggle("btn-info");
+        timerControl.classList.toggle("btn-warning");
     }
 }
 
@@ -15,6 +45,7 @@ async function setUpTimer() {
     let issuePk = this.dataset.pk;
     let runningTimerPk = this.dataset.runningTimer === "None" ? null : this.dataset.runningTimer;
     let action;
+    let timerLink = document.querySelector("#timer-link");
 
     if (runningTimerPk === issuePk) {
         action = "stop";
@@ -45,61 +76,55 @@ async function setUpTimer() {
         if (action === "start") {
             this.innerHTML = "Stop Timer";
             this.dataset.runningTimer = issuePk;
+            timerLink.dataset.runningTimer = issuePk;
             showTime();
         } else if (action === "stop") {
             this.innerHTML = "Start Timer";
             this.dataset.runningTimer = "None";
+            timerLink.dataset.runningTimer = "None";
         }
     }
 }
 
-// async function getUserWorkEffort() {
-//     currentWorkEffort = await fetch(`http://${window.location.host}/user_timer_effort/`, {
-//         method: "GET"
-//     });
-
-//     return currentWorkEffort;
-// }
-
-async function showTime(currentWorkEffort) {
-    if (currentWorkEffort === undefined) {
-        let response = await fetch(`http://${window.location.host}/user_timer_effort/`, {
-            method: "GET"
-        });
-        var currentWorkEffort = await response.json();
-        currentWorkEffort = parseInt(currentWorkEffort.work_effort);
+async function showTime(timerItem, currentWorkEffort) {
+    if (!timerItem) {
+        timerItem = document.querySelector("#timer-item");
     }
+    if (!Object.values(timerItem.classList).includes("timer-hidden")) {
+        if (currentWorkEffort === undefined) {
+            let response = await fetch(`http://${window.location.host}/user_timer_effort/`, {
+                method: "GET"
+            });
+            currentWorkEffort = await response.json();
+            currentWorkEffort = parseInt(currentWorkEffort.work_effort);
+        }
 
-    console.log(currentWorkEffort);
+        console.log(currentWorkEffort);
 
-    let timerWidget = document.querySelector("#timer-widget");
-    var time = currentWorkEffort;
-    timerWidget.innerText = time;
-    timerWidget.textContent = time;
+        let timerWidget = document.querySelector("#timer-widget");
+        var time = convertHMS(currentWorkEffort);
+        timerWidget.innerText = time;
+        timerWidget.textContent = time;
 
-    setTimeout(showTime, 1000, time + 1);
+        setTimeout(showTime, 1000, timerItem, currentWorkEffort + 1);
+    }
 }
 
-// async function showTime() {
-//     currentWorkEffort = await fetch(`http://${window.location.host}/user_timer_effort/`, {
-//         method: "GET"
-//     });
-
-//     var date = new Date();
-//     var h = date.getHours(); // 0 - 23
-//     var m = date.getMinutes(); // 0 - 59
-//     var s = date.getSeconds(); // 0 - 59
-
-//     h = (h < 10) ? "0" + h : h;
-//     m = (m < 10) ? "0" + m : m;
-//     s = (s < 10) ? "0" + s : s;
-
-//     var time = h + ":" + m + ":" + s;
-//     document.getElementById("MyClockDisplay").innerText = time;
-//     document.getElementById("MyClockDisplay").textContent = time;
-
-//     setTimeout(showTime, 1000);
-// }
+function convertHMS(sec) {
+    let hours = Math.floor(sec / 3600);
+    let minutes = Math.floor((sec - (hours * 3600)) / 60);
+    let seconds = sec - (hours * 3600) - (minutes * 60);
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    if (seconds < 10) {
+        seconds = "0" + seconds;
+    }
+    return hours + ':' + minutes + ':' + seconds; // Return is HH : MM : SS
+}
 
 function getCSRF() {
     cookieName = "csrftoken"

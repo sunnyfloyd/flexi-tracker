@@ -42,7 +42,7 @@
     {% if request.user.is_authenticated %}
     <!-- Messages Dropdown Menu -->
     <li id="timer-item" class="nav-item {% if not request.user.profile.has_running_timer %}timer-hidden{% endif %}">
-      <a class="nav-link" href="#"><i class="far fa-stop-circle"></i> <span id="timer-widget">00:00:00</span></a>
+      <a id="timer-link" class="nav-link" href="#" data-running-timer={{ request.user.profile.has_running_timer }}><i class="far fa-stop-circle"></i> <span id="timer-widget"></span></a>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link" data-toggle="dropdown" href="#">
