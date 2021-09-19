@@ -1,6 +1,3 @@
-from django.contrib.auth import decorators
-from django.http import request
-from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from .models import Issue, Project, TimeEntry
@@ -9,13 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_http_methods
-from django.core.exceptions import BadRequest, PermissionDenied
 from django.utils import timezone
 from django.http import JsonResponse
 import json
 
 
-class IndexView(generic.ListView):
+class IndexView(LoginRequiredMixin, generic.ListView):
     template_name = "tracker/dashboard.html"
     model = Issue
     paginate_by = 3
@@ -34,7 +30,7 @@ class IndexView(generic.ListView):
         return context
 
 
-class IssueDetailView(generic.DetailView):
+class IssueDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "tracker/issue_detail.html"
     model = Issue
 
@@ -44,7 +40,7 @@ class IssueDetailView(generic.DetailView):
         return context
 
 
-class IssueListView(generic.ListView):
+class IssueListView(LoginRequiredMixin, generic.ListView):
     template_name = "tracker/issue_list.html"
     model = Issue
     paginate_by = 3
@@ -86,6 +82,25 @@ class IssueUpdateView(LoginRequiredMixin, generic.UpdateView):
         issue = form.save(commit=False)
         issue.last_update_by = self.request.user
         return super().form_valid(form)
+
+
+class IssueDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Issue
+    # success_url = reverse_lazy("tracker:project_list")
+
+    def delete(self, request, *args, **kwargs):
+        # Extending 'delete' method to update 'last_update_by' field
+        # which will be used in 'post_delete' signal during
+        # the creation of deletion log
+        pk = self.kwargs["pk"]
+        issue = Issue.objects.get(pk=pk)
+        issue.last_update_by = self.request.user
+        issue.save()
+        return super().delete(request, *args, **kwargs)
+
+    def get_success_url(self):
+        project = Issue.objects.get(pk=self.kwargs["pk"]).project
+        return project.get_absolute_url()
 
 
 class ProjectListView(LoginRequiredMixin, generic.ListView):

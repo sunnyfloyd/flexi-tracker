@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .utils import get_work_effort
 from django.utils import timezone
+from django.core.validators import MinValueValidator
 
 
 class Project(models.Model):
@@ -115,7 +116,7 @@ class Issue(models.Model):
     status = models.CharField(
         choices=ISSUE_STATUS_CHOICES, max_length=20, default="to_do"
     )
-    work_effort_estimate = models.IntegerField()
+    work_effort_estimate = models.IntegerField(validators=[MinValueValidator(1)])
     # work_effort_actual = models.IntegerField(default=0)
     due_date = models.DateTimeField()
     child_tasks = models.ManyToManyField(

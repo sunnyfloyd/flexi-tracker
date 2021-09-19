@@ -1,5 +1,5 @@
 {% extends 'tracker/base.html' %}
-{% load adminlte_helpers %}
+{% load admin_helpers %}
 
 {% block title %}Issue Detail{% endblock %}
 
@@ -158,7 +158,7 @@
                         {% endif %}
                     </button>
                     <a href="{% url 'tracker:issue_edit' object.pk %}" class="btn btn-sm btn-primary">Edit</a>
-                    <a href="{% url 'tracker:project_delete' object.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                    <a href="{% url 'tracker:issue_delete' object.pk %}" class="btn btn-sm btn-danger">Delete</a>
                 </div>
             </div>
         </div>

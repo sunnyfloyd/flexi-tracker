@@ -1,4 +1,4 @@
-{% load adminlte_helpers i18n %}
+{% load admin_helpers %}
 {% load static %}
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
 
@@ -42,7 +42,8 @@
     {% if request.user.is_authenticated %}
     <!-- Messages Dropdown Menu -->
     <li id="timer-item" class="nav-item {% if not request.user.profile.has_running_timer %}timer-hidden{% endif %}">
-      <a id="timer-link" class="nav-link" href="#" data-running-timer={{ request.user.profile.has_running_timer }}><i class="far fa-stop-circle"></i> <span id="timer-widget"></span></a>
+      <a id="timer-link" class="nav-link" href="#" data-running-timer={{ request.user.profile.has_running_timer }}><i
+          class="far fa-stop-circle"></i> <span id="timer-widget"></span></a>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link" data-toggle="dropdown" href="#">

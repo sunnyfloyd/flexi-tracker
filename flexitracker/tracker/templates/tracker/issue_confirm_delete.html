@@ -1,0 +1,23 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Delete Issue{% endblock %}
+
+{% block page_name %}
+<div class="container">Delete Issue</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Confirm Issue Deletion</h3>
+        </div>
+
+        <form method="post" class="p-2">
+            {% csrf_token %}
+            <p class="">Confirm issue deletion.</p>
+            <button class="btn btn-danger" type="submit">Delete</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+# import django_heroku
+# import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,8 +26,6 @@ SECRET_KEY = "django-insecure-lh15zr-mw%$1%+sum59f!en3ufa9_wq4tb7qwyst5e1ummj7cn
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -80,6 +80,7 @@ WSGI_APPLICATION = "flexitracker.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {"default": dj_database_url.config()}
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -125,6 +126,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -153,3 +155,7 @@ LOGOUT_URL = "account:logout"
 # Application config
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# Deployment
+
+# django_heroku.settings(locals())
