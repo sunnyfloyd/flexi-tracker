@@ -31,9 +31,13 @@ class IndexView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class IssueDetailView(LoginRequiredMixin, generic.DetailView):
+class IssueDetailView(PermissionRequiredMixin, generic.DetailView):
     template_name = "tracker/issue_detail.html"
     model = Issue
+    permission_required = "view_project"
+
+    def get_permission_object(self):
+        return Issue.objects.get(pk=self.kwargs["pk"]).project
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,14 +45,18 @@ class IssueDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class IssueListView(LoginRequiredMixin, generic.ListView):
+class IssueListView(PermissionRequiredMixin, generic.ListView):
     template_name = "tracker/issue_list.html"
     model = Issue
     paginate_by = 3
+    permission_required = "view_project"
 
     def get_queryset(self):
         self.project = get_object_or_404(Project, pk=self.kwargs["pk"])
         return Issue.objects.filter(project=self.project)
+
+    def get_permission_object(self):
+        return get_object_or_404(Project, pk=self.kwargs["pk"])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -112,9 +120,12 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
         return Project.objects.filter(creator=self.request.user)
 
 
-class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
+class ProjectDetailView(
+    PermissionRequiredMixin, LoginRequiredMixin, generic.DetailView
+):
     template_name = "tracker/project_detail.html"
     model = Project
+    permission_required = "view_project"
 
 
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
@@ -142,7 +153,6 @@ class ProjectDeleteView(PermissionRequiredMixin, generic.DeleteView):
     model = Project
     success_url = reverse_lazy("tracker:project_list")
     permission_required = "delete_project"
-    
 
     def delete(self, request, *args, **kwargs):
         pk = self.kwargs["pk"]

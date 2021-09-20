@@ -1,21 +1,69 @@
-from django.db.models.signals import post_save, post_delete
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from .models import Project, Issue, Log
 from guardian.shortcuts import assign_perm
+from django.contrib.auth.models import Group
 
 MODELS = (Project, Issue)
 
 # should probably add a new function for TimeEntry
 
 
-@receiver(post_save, sender=[Project, Issue])
-def set_permission(sender, instance, created, **kwargs):
-    # This could be changed into a one liner using __name__,
-    # but readability would suffer
-    if isinstance(sender, Project):
+@receiver(post_save, sender=Project)
+def set_project_delete_permission(instance, created, **kwargs):
+    if created:
+        # deletion permission
         assign_perm("delete_project", instance.creator, instance)
-    elif isinstance(sender, Issue):
+
+        # initializing view permission
+        group = Group.objects.create(name=f"project_{instance.pk}_members")
+        instance.creator.groups.add(group)
+        assign_perm("view_project", group, instance)
+
+
+@receiver(post_save, sender=Issue)
+def set_issue_delete_permission(instance, created, **kwargs):
+    if created:
         assign_perm("delete_issue", instance.creator, instance)
+
+
+@receiver(m2m_changed, sender=Project.members.through)
+def set_permission_members(instance, action, model, pk_set, **kwargs):
+        if action == "post_add":
+            group = Group.objects.get(name=f"project_{instance.pk}_members")
+            for pk in pk_set:
+                model.objects.get(pk=pk).groups.add(group)
+
+
+# @receiver(post_save, sender=Project)
+# def set_project_delete_permission(instance, **kwargs):
+#     assign_perm("delete_project", instance.creator, instance)
+
+
+# @receiver(post_save, sender=Issue)
+# def set_issue_delete_permission(instance, **kwargs):
+#     assign_perm("delete_issue", instance.creator, instance)
+
+
+# @receiver(m2m_changed, sender=Project.members.through)
+# def set_permission_members(instance, action, model, pk_set, **kwargs):
+#     print(action)
+#     if action == "post_add":
+#         print('I AM HERE')
+#         try:
+#             group = Group.objects.get(name=f"project_{instance.pk}_members")
+#         except ObjectDoesNotExist:
+#             print('exception...')
+#             group = Group.objects.create(name=f"project_{instance.pk}_members")
+#         print(group)
+#         print(pk_set)
+#         pk_set.add(instance.creator.pk)
+#         print(pk_set)
+#         print(model)
+#         for pk in pk_set:
+#             model.objects.get(pk=pk).groups.add(group)
+#         assign_perm("view_project", group, instance)
 
 
 # Django UpdateView does not handle object updates via 'update_fields'.
