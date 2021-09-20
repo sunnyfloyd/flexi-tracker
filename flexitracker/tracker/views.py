@@ -9,6 +9,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.http import JsonResponse
 import json
+from guardian.mixins import PermissionRequiredMixin
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -84,9 +85,9 @@ class IssueUpdateView(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
 
 
-class IssueDeleteView(LoginRequiredMixin, generic.DeleteView):
+class IssueDeleteView(PermissionRequiredMixin, LoginRequiredMixin, generic.DeleteView):
     model = Issue
-    # success_url = reverse_lazy("tracker:project_list")
+    permission_required = "delete_issue"
 
     def delete(self, request, *args, **kwargs):
         # Extending 'delete' method to update 'last_update_by' field
@@ -137,9 +138,11 @@ class ProjectEditView(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
 
 
-class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
+class ProjectDeleteView(PermissionRequiredMixin, generic.DeleteView):
     model = Project
     success_url = reverse_lazy("tracker:project_list")
+    permission_required = "delete_project"
+    
 
     def delete(self, request, *args, **kwargs):
         pk = self.kwargs["pk"]

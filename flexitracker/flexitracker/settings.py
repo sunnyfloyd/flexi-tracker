@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "tracker.apps.TrackerConfig",
     "crispy_forms",
     "adminlte3",
+    "guardian",
 ]
 
 MIDDLEWARE = [
@@ -151,6 +152,11 @@ CORS_ORIGIN_ALLOW_ALL = True
 LOGIN_REDIRECT_URL = "tracker:index"
 LOGIN_URL = "account:login"
 LOGOUT_URL = "account:logout"
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # default
+    'guardian.backends.ObjectPermissionBackend',
+)
 
 # Application config
 
