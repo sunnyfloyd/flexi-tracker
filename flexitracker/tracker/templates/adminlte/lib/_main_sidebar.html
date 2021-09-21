@@ -53,7 +53,8 @@
                 {% for project in projects %}
                 <li class="nav-item">
                     <a href="{{ project.get_absolute_url }}"
-                        class="nav-link {% if project %}{% add_active 'tracker:issue_list' project.pk %}{% endif %}">
+                        class="nav-link {% add_active 'tracker:issue_list' project.pk %} {% if project_pk == project.pk %}active{% endif %}">
+                        {% comment %} class="nav-link {% if project %}{% add_active 'tracker:issue_list' project.pk %}{% elif project.pk == project_pk %}active{% endif %}"> {% endcomment %}
                         {% comment %} class="nav-link {% if project.pk == view.kwargs.project_pk or project.pk == project_pk %}active{% endif %}"> {% endcomment %}
                         <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
                     </a>

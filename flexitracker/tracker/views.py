@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from .models import Issue, Project, TimeEntry
 from .forms import IssueForm, ProjectForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_http_methods
@@ -62,6 +62,7 @@ class IssueListView(PermissionRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
 
         context["project"] = self.project
+        context["project_pk"] = self.kwargs["pk"]
 
         # Adding pagination
         per_page = context["paginator"].per_page
@@ -76,24 +77,44 @@ class IssueCreateView(LoginRequiredMixin, generic.CreateView):
     form_class = IssueForm
     site_name = "Issue Form"
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user_pk"] = self.request.user.pk
+        return kwargs
+
     def form_valid(self, form):
         issue = form.save(commit=False)
         issue.creator = self.request.user
         return super().form_valid(form)
 
 
-class IssueUpdateView(LoginRequiredMixin, generic.UpdateView):
+class IssueUpdateView(PermissionRequiredMixin, generic.UpdateView):
     template_name = "tracker/issue_form.html"
     form_class = IssueForm
     model = Issue
+    permission_required = "change_project_issue"
+
+    def get_permission_object(self):
+        issue = get_object_or_404(Issue, pk=self.kwargs["pk"])
+        return issue.project
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user_pk"] = self.request.user.pk
+        return kwargs
 
     def form_valid(self, form):
         issue = form.save(commit=False)
         issue.last_update_by = self.request.user
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project_pk"] = Issue.objects.get(pk=self.kwargs["pk"]).project.pk
+        return context
 
-class IssueDeleteView(PermissionRequiredMixin, LoginRequiredMixin, generic.DeleteView):
+
+class IssueDeleteView(PermissionRequiredMixin, generic.DeleteView):
     model = Issue
     permission_required = "delete_issue"
 
@@ -111,6 +132,11 @@ class IssueDeleteView(PermissionRequiredMixin, LoginRequiredMixin, generic.Delet
         project = Issue.objects.get(pk=self.kwargs["pk"]).project
         return project.get_absolute_url()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project_pk"] = Issue.objects.get(pk=self.kwargs["pk"]).project.pk
+        return context
+
 
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     template_name = "tracker/project_list.html"
@@ -120,17 +146,25 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
         return Project.objects.filter(creator=self.request.user)
 
 
-class ProjectDetailView(
-    PermissionRequiredMixin, LoginRequiredMixin, generic.DetailView
-):
+class ProjectDetailView(PermissionRequiredMixin, generic.DetailView):
     template_name = "tracker/project_detail.html"
     model = Project
     permission_required = "view_project"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project_pk"] = self.kwargs["pk"]
+        return context
 
 
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "tracker/project_form.html"
     form_class = ProjectForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user_pk"] = self.request.user.pk
+        return kwargs
 
     def form_valid(self, form):
         project = form.save(commit=False)
@@ -138,15 +172,26 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
 
-class ProjectEditView(LoginRequiredMixin, generic.UpdateView):
+class ProjectUpdateView(PermissionRequiredMixin, generic.UpdateView):
     template_name = "tracker/project_form.html"
     form_class = ProjectForm
     model = Project
+    permission_required = "change_project"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user_pk"] = self.request.user.pk
+        return kwargs
 
     def form_valid(self, form):
         project = form.save(commit=False)
         project.last_update_by = self.request.user
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project_pk"] = self.kwargs["pk"]
+        return context
 
 
 class ProjectDeleteView(PermissionRequiredMixin, generic.DeleteView):
@@ -160,6 +205,11 @@ class ProjectDeleteView(PermissionRequiredMixin, generic.DeleteView):
         project.last_update_by = self.request.user
         project.save()
         return super().delete(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["project_pk"] = self.kwargs["pk"]
+        return context
 
 
 @login_required

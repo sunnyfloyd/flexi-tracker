@@ -7,63 +7,37 @@ from django.contrib.auth.models import Group
 
 MODELS = (Project, Issue)
 
-# should probably add a new function for TimeEntry
+# Might want to add logging time entries via TimeEntry model
 
 
 @receiver(post_save, sender=Project)
-def set_project_delete_permission(instance, created, **kwargs):
+def set_perm_project_delete(instance, created, **kwargs):
     if created:
-        # deletion permission
+        # deletion and update permissions for project
         assign_perm("delete_project", instance.creator, instance)
+        assign_perm("change_project", instance.creator, instance)
 
-        # initializing view permission
+        # initializing view and update permissions for related issues
         group = Group.objects.create(name=f"project_{instance.pk}_members")
         instance.creator.groups.add(group)
         assign_perm("view_project", group, instance)
+        assign_perm("change_project_issue", group, instance)
 
 
 @receiver(post_save, sender=Issue)
-def set_issue_delete_permission(instance, created, **kwargs):
+def set_perm_issue_delete(instance, created, **kwargs):
     if created:
         assign_perm("delete_issue", instance.creator, instance)
+        # deletion permission for issue is also granted to project leader
+        assign_perm("delete_issue", instance.project.creator, instance)
 
 
 @receiver(m2m_changed, sender=Project.members.through)
-def set_permission_members(instance, action, model, pk_set, **kwargs):
-        if action == "post_add":
-            group = Group.objects.get(name=f"project_{instance.pk}_members")
-            for pk in pk_set:
-                model.objects.get(pk=pk).groups.add(group)
-
-
-# @receiver(post_save, sender=Project)
-# def set_project_delete_permission(instance, **kwargs):
-#     assign_perm("delete_project", instance.creator, instance)
-
-
-# @receiver(post_save, sender=Issue)
-# def set_issue_delete_permission(instance, **kwargs):
-#     assign_perm("delete_issue", instance.creator, instance)
-
-
-# @receiver(m2m_changed, sender=Project.members.through)
-# def set_permission_members(instance, action, model, pk_set, **kwargs):
-#     print(action)
-#     if action == "post_add":
-#         print('I AM HERE')
-#         try:
-#             group = Group.objects.get(name=f"project_{instance.pk}_members")
-#         except ObjectDoesNotExist:
-#             print('exception...')
-#             group = Group.objects.create(name=f"project_{instance.pk}_members")
-#         print(group)
-#         print(pk_set)
-#         pk_set.add(instance.creator.pk)
-#         print(pk_set)
-#         print(model)
-#         for pk in pk_set:
-#             model.objects.get(pk=pk).groups.add(group)
-#         assign_perm("view_project", group, instance)
+def set_perm_project_member(instance, action, model, pk_set, **kwargs):
+    if action == "post_add":
+        group = Group.objects.get(name=f"project_{instance.pk}_members")
+        for pk in pk_set:
+            model.objects.get(pk=pk).groups.add(group)
 
 
 # Django UpdateView does not handle object updates via 'update_fields'.
@@ -83,7 +57,10 @@ def log_action(instance, created, **kwargs):
 
 @receiver(post_delete)
 def log_deletion(instance, **kwargs):
-    if isinstance(instance, MODELS):
+    # Checking for 'instance.last_update_by' ensures that issue deletions
+    # cascaded after project removal will not trigger errors nor will they bloat
+    # dashboards that display recent actions.
+    if isinstance(instance, MODELS) and instance.last_update_by:
         Log.objects.create(
             user=instance.last_update_by,
             action="delete",

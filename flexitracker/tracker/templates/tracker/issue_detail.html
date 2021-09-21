@@ -141,7 +141,7 @@
                     {% for issue in object.child_tasks.all %}
                     <li>
                         <a href="{% url 'tracker:issue_detail' issue.pk %}" class="btn-link text-secondary"><i
-                                class="far fa-fw fa-user"></i>
+                                class="far fa-fw fa-clipboard"></i>
                             {{ issue.name }}</a>
                     </li>
                     {% endfor %}

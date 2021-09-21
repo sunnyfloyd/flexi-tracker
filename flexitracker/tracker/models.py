@@ -31,6 +31,9 @@ class Project(models.Model):
 
     class Meta:
         ordering = ("-creation_date",)
+        permissions = [
+            ("change_project_issue", "Can edit issues linked to this project")
+        ]
 
     def __str__(self):
         return self.name
