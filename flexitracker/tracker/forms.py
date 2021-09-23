@@ -20,8 +20,9 @@ class IssueForm(forms.ModelForm):
             "work_effort_estimate": forms.NumberInput(attrs={"min": 1}),
         }
 
-    # TODO: Limiting selections in both project and issue forms should be additionally
-    # validated via cleaning methods: clean_projects, clean_child_tasks, clean_members
+    # TODO: Limiting selection fields in both project and issue forms should be
+    # additionally validated via cleaning methods:
+    # clean_projects, clean_child_tasks, clean_members
 
     def __init__(self, *args, **kwargs):
         user_pk = kwargs.get("user_pk", None)
@@ -30,8 +31,10 @@ class IssueForm(forms.ModelForm):
             user = get_user_model().objects.get(pk=user_pk)
             projects = (user.projects.all() | user.created_projects.all()).distinct()
             super().__init__(*args, **kwargs)
+
             # limiting selection to projects that given user is part of
             self.fields["project"] = forms.ModelChoiceField(queryset=projects)
+
             # limiting selection to issues that are part of user projects
             self.fields["child_tasks"] = forms.ModelMultipleChoiceField(
                 queryset=Issue.objects.filter(project__in=projects)
@@ -45,8 +48,8 @@ class ProjectForm(forms.ModelForm):
         exclude = ("creator", "last_update", "last_update_by")
 
     def __init__(self, *args, **kwargs):
-        # removing AnonymousUser added by django-guardian
-        # and project creator to improve UX
+        # removing project creator and AnonymousUser added by
+        # django-guardian to the selection field
         user_pk = kwargs.get("user_pk", None)
         if user_pk:
             kwargs.pop("user_pk")

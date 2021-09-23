@@ -11,7 +11,7 @@ MODELS = (Project, Issue)
 
 
 @receiver(post_save, sender=Project)
-def set_perm_project_delete(instance, created, **kwargs):
+def set_project_delete_change_perm(instance, created, **kwargs):
     if created:
         # deletion and update permissions for project
         assign_perm("delete_project", instance.creator, instance)
@@ -25,7 +25,7 @@ def set_perm_project_delete(instance, created, **kwargs):
 
 
 @receiver(post_save, sender=Issue)
-def set_perm_issue_delete(instance, created, **kwargs):
+def set_issue_delete_perm(instance, created, **kwargs):
     if created:
         assign_perm("delete_issue", instance.creator, instance)
         # deletion permission for issue is also granted to project leader
@@ -33,7 +33,7 @@ def set_perm_issue_delete(instance, created, **kwargs):
 
 
 @receiver(m2m_changed, sender=Project.members.through)
-def set_perm_project_member(instance, action, model, pk_set, **kwargs):
+def set_project_member_perm(instance, action, model, pk_set, **kwargs):
     if action == "post_add":
         group = Group.objects.get(name=f"project_{instance.pk}_members")
         for pk in pk_set:
@@ -58,8 +58,8 @@ def log_action(instance, created, **kwargs):
 @receiver(post_delete)
 def log_deletion(instance, **kwargs):
     # Checking for 'instance.last_update_by' ensures that issue deletions
-    # cascaded after project removal will not trigger errors nor will they bloat
-    # dashboards that display recent actions.
+    # that cascaded after project removal would not trigger errors nor would
+    # they bloat dashboards that display recent actions.
     if isinstance(instance, MODELS) and instance.last_update_by:
         Log.objects.create(
             user=instance.last_update_by,

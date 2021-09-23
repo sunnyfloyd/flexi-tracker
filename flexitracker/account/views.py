@@ -10,11 +10,6 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 
 
-# Subclassing PasswordChangeView to ensure proper success redirect
-class PasswordChangeAccountView(PasswordChangeView):
-    success_url = reverse_lazy("account:password_change_done")
-
-
 class RegistrationFormView(generic.FormView):
     template_name = "account/register.html"
     form_class = UserCreationAccountForm
@@ -24,6 +19,11 @@ class RegistrationFormView(generic.FormView):
         new_user = form.save()
         Profile.objects.create(user=new_user)
         return super().form_valid(form)
+
+
+# Subclassing PasswordChangeView to ensure proper success redirect
+class PasswordChangeAccountView(PasswordChangeView):
+    success_url = reverse_lazy("account:password_change_done")
 
 
 def register_done(request):
@@ -54,24 +54,4 @@ def profile(request, pk):
         request,
         "account/profile.html",
         {"user_form": user_form, "profile_form": profile_form, "user": user},
-    )
-
-
-@login_required
-def dashboard(request):
-    if request.method == "POST":
-        user_form = UserEditForm(instance=request.user, data=request.POST)
-        profile_form = ProfileEditForm(instance=request.user.profile, data=request.POST)
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            return HttpResponseRedirect(reverse("account:dashboard"))
-    else:
-        user_form = UserEditForm()
-        profile_form = ProfileEditForm()
-
-    return render(
-        request,
-        "account/dashboard.html",
-        {"user_form": user_form, "profile_form": profile_form},
     )

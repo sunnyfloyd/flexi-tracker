@@ -90,33 +90,24 @@
                                             <span class="time"><i class="far fa-clock"></i>
                                                 {{ log.date|date:"d M Y H:i" }}</span>
 
-                                            <h3 class="timeline-header border-0"><a
-                                                    href="{{ log.user.profile.get_absolute_url }}"></a>
+                                            <h3 class="timeline-header border-0">
                                                 {{ log.description_timeline|safe }}{% if log.action != 'delete' %}{% endif %}
                                             </h3>
                                         </div>
                                     </div>
                                     {% endfor %}
 
-                                    {% endfor %}
-                                    {% comment %} {% for log in user.logs.all %}
+                                    {% empty %}
                                     <div>
-                                        <i
-                                            class="
-                                            fas fa-{% if log.issue %}bug{% elif log.project %}clipboard{% else %}trash-alt{% endif %}
-                                            bg-{% if log.action == 'create' %}primary{% elif log.action == 'update' %}warning{% else %}danger{% endif %}"></i>
-
+                                        <i class="fas fa-info bg-info"></i>
                                         <div class="timeline-item">
-                                            <span class="time"><i class="far fa-clock"></i>
-                                                {{ log.date|date:"d M Y H:i" }}</span>
-
-                                            <h3 class="timeline-header border-0"><a
-                                                    href="{{ log.user.profile.get_absolute_url }}"></a>
-                                                {{ log.description_timeline|safe }}{% if log.action != 'delete' %}{% endif %}
+                                            <h3 class="timeline-header border-0">
+                                                No actions logged.
                                             </h3>
                                         </div>
                                     </div>
-                                    {% endfor %} {% endcomment %}
+
+                                    {% endfor %}
                                     <!-- END timeline item -->
                                     <div>
                                         <i class="far fa-clock bg-gray"></i>

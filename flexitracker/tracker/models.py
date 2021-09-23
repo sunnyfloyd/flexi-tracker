@@ -1,9 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
-from django.db.models.fields import CharField
 from django.utils.translation import gettext as _
 from django.urls import reverse
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from .utils import get_work_effort
 from django.utils import timezone
 from django.core.validators import MinValueValidator
@@ -14,15 +14,17 @@ class Project(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=1500, default="No description provided.")
     creator = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="created_projects"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="created_projects",
     )
     members = models.ManyToManyField(
-        get_user_model(), blank=True, related_name="projects"
+        settings.AUTH_USER_MODEL, blank=True, related_name="projects"
     )
     creation_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
     last_update_by = models.ForeignKey(
-        get_user_model(),
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="recently_updated_projects",
         blank=True,
@@ -39,6 +41,8 @@ class Project(models.Model):
         return self.name
 
     def get_absolute_url(self):
+        # TODO: should be pointing to the detail view of a project instead of
+        # issue list since this is quite confusing
         return reverse("tracker:issue_list", kwargs={"pk": self.pk})
 
     @property
@@ -76,17 +80,21 @@ class Issue(models.Model):
         Project, on_delete=models.CASCADE, related_name="issues"
     )
     creator = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="created_issues"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="created_issues",
     )
     name = models.CharField(max_length=60)
     description = models.CharField(max_length=1500)
     assignee = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="assigned_issues"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="assigned_issues",
     )
     creation_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
     last_update_by = models.ForeignKey(
-        get_user_model(),
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="recently_updated_issues",
         blank=True,
@@ -127,8 +135,6 @@ class Issue(models.Model):
     )
 
     class Meta:
-        verbose_name = _("Issue")
-        verbose_name_plural = _("Issues")
         ordering = ("-creation_date",)
 
     def __str__(self):
@@ -151,7 +157,7 @@ class Issue(models.Model):
 
 class Log(models.Model):
     user = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="logs"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="logs"
     )
     date = models.DateTimeField(auto_now_add=True)
     LOG_ACTION_CHOICES = [
@@ -165,11 +171,12 @@ class Log(models.Model):
     #                                    NOTE                                    #
     ##############################################################################
     # For both foreign keys in the Log model I decided to use 'models.CASCADE'.
-    # This will result in removal of all of the related logs. From the audit trail
-    # perspective this is not something that is desired. However, having scale of
-    # this project and perceived end-user's profile in mind I decided that any
-    # project/issue deletions will be concious decisions and therefore logging
-    # deletion action only should be sufficient risk mitigating measure.
+    # This will result in removal of all of the related logs in case of a deletion
+    # of a instance of Issue/Project. From the audit trail perspective this is not
+    # something that is desired. However, having a scale of this project
+    # and perceived end-user's profile in mind, I decided that any project/issue
+    # deletions will be carried out conciouslyand therefore logging deletion
+    # action only should be a sufficient risk mitigating measure.
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="logs", blank=True, null=True
     )
@@ -184,8 +191,7 @@ class Log(models.Model):
     @property
     def description(self):
         related_object = (
-            # "issue"
-            f"issue"
+            "issue"
             if self.issue
             else ("project" if self.project else self.removed_object.split(";")[0])
         )
@@ -214,7 +220,7 @@ class Log(models.Model):
 
 class TimeEntry(models.Model):
     user = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="time_entries"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="time_entries"
     )
     issue = models.ForeignKey(
         Issue, on_delete=models.CASCADE, related_name="time_entries"
