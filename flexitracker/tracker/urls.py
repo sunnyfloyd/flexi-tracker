@@ -23,4 +23,5 @@ urlpatterns = [
         name="project_delete",
     ),
     path("user_timer_effort/", views.get_user_timer_effort, name="user_timer_effort"),
+    path("search/", views.issue_search, name="issue_search"),
 ]

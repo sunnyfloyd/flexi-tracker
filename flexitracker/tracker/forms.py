@@ -84,3 +84,6 @@ class ProjectForm(forms.ModelForm):
                     f"Member {member} cannot be assigned to this project."
                 )
         return cd["members"]
+
+class SearchForm(forms.Form):
+    query = forms.CharField()

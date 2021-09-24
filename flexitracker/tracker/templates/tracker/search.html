@@ -1,0 +1,117 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block page_name %}
+<div class="container-fluid">Search Results</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Issues matching your query</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6">
+                                <div class="dt-buttons btn-group flex-wrap"> <button
+                                        class="btn btn-secondary buttons-copy buttons-html5" tabindex="0"
+                                        aria-controls="example1" type="button"><span>Copy</span></button> <button
+                                        class="btn btn-secondary buttons-csv buttons-html5" tabindex="0"
+                                        aria-controls="example1" type="button"><span>CSV</span></button> <button
+                                        class="btn btn-secondary buttons-excel buttons-html5" tabindex="0"
+                                        aria-controls="example1" type="button"><span>Excel</span></button> <button
+                                        class="btn btn-secondary buttons-pdf buttons-html5" tabindex="0"
+                                        aria-controls="example1" type="button"><span>PDF</span></button> <button
+                                        class="btn btn-secondary buttons-print" tabindex="0" aria-controls="example1"
+                                        type="button"><span>Print</span></button>
+                                    <div class="btn-group"><button
+                                            class="btn btn-secondary buttons-collection dropdown-toggle buttons-colvis"
+                                            tabindex="0" aria-controls="example1" type="button" aria-haspopup="true"
+                                            aria-expanded="false"><span>Column visibility</span></button></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                                <div id="example1_filter" class="dataTables_filter"><label>Search:<input type="search"
+                                            class="form-control form-control-sm" placeholder=""
+                                            aria-controls="example1"></label></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="example1" class="table table-bordered table-striped dataTable dtr-inline"
+                                    role="grid" aria-describedby="example1_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting sorting_asc" tabindex="0" aria-controls="example1"
+                                                rowspan="1" colspan="1" aria-sort="ascending"
+                                                aria-label="Rendering engine: activate to sort column descending">
+                                                Type</th>
+
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="Browser: activate to sort column ascending">
+                                                Name</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1"
+                                                aria-label="Engine version: activate to sort column ascending">
+                                                Project</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="CSS grade: activate to sort column ascending">
+                                                Creator</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="CSS grade: activate to sort column ascending">
+                                                Priority</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="CSS grade: activate to sort column ascending">
+                                                Status</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="CSS grade: activate to sort column ascending">
+                                                Created</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="CSS grade: activate to sort column ascending">
+                                                Updated</th>
+                                            <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1"
+                                                colspan="1" aria-label="CSS grade: activate to sort column ascending">
+                                                Due</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for issue in results %}
+                                        <tr class="{% cycle 'odd' 'even' %}">
+                                            <td>{{ issue.get_issue_type_display }}</td>
+                                            <td><a href="{% url 'tracker:issue_detail' issue.pk %}">{{ issue.name }}</a>
+                                            </td>
+                                            <td><a
+                                                    href="{{ issue.project.get_absolute_url }}">{{ issue.project.name }}</a>
+                                            </td>
+                                            <td><a
+                                                    href="{{ issue.creator.profile.get_absolute_url }}">{{ issue.creator }}</a>
+                                            </td>
+                                            <td>{{ issue.get_priority_display }}</td>
+                                            <td>{{ issue.get_status_display }}</td>
+                                            <td>{{ issue.creation_date|date:"d.m.Y" }}</td>
+                                            <td>{{ issue.last_update|date:"d.m.Y" }}</td>
+                                            <td>{{ issue.due_date|date:"d.m.Y" }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% include 'pagination.html' with page=page_obj %}
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</div>
+{% endblock content %}

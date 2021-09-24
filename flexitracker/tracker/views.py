@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.views import generic
 from .models import Issue, Project, TimeEntry
-from .forms import IssueForm, ProjectForm
+from .forms import IssueForm, ProjectForm, SearchForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,6 +12,8 @@ import json
 from guardian.mixins import PermissionRequiredMixin
 from .utils import add_pagination_context
 from .custom_mixins import LogDeletionMixin, ProjectContextMixin, TrackerFormMixin
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.shortcuts import render
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -126,6 +128,33 @@ class ProjectDeleteView(
     model = Project
     success_url = reverse_lazy("tracker:project_list")
     permission_required = "delete_project"
+
+
+################## SEARCH VIEW ##################
+def issue_search(request):
+    query = None
+    results = []
+    if "query" in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data["query"]
+            search_vector = (
+                SearchVector("name", weight="A")
+                + SearchVector("description", weight="B")
+            )
+            search_query = SearchQuery(query)
+            results = (
+                Issue.objects.annotate(
+                    search=search_vector, rank=SearchRank(search_vector, search_query)
+                )
+                .filter(search=search_query) 
+                .order_by("-rank")
+            )
+    return render(
+        request,
+        "tracker/search.html",
+        {"results": results},
+    )
 
 
 ################## AJAX API ##################
