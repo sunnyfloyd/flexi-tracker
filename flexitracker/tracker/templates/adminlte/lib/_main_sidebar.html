@@ -14,18 +14,18 @@
     <div class="sidebar">
         <!-- Sidebar user panel -->
         {% block user_panel %}
-            {% if request.user.is_authenticated %}
-            <!-- Sidebar user panel (optional) -->
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                <div class="image">
-                    <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
-                </div>
-                <div class="info">
-                    <a href="{% url 'account:profile' request.user.pk %}"
-                        class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
-                </div>
+        {% if request.user.is_authenticated %}
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
             </div>
-            {% endif %}
+            <div class="info">
+                <a href="{% url 'account:profile' request.user.pk %}"
+                    class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
+            </div>
+        </div>
+        {% endif %}
         {% endblock %}
 
         {% block form %}{% endblock %}
@@ -35,49 +35,49 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 {% block nav_links_outer %}
-                <li class="nav-header">PROJECTS</li>
+                <li class="nav-header">FUNCTIONS</li>
 
                 {% block nav_links %}
                 <li class="nav-item">
-                    <a href="{% url 'tracker:new_project' %}"
-                        class="nav-link {% add_active 'tracker:new_project' %}">
-                        <i class="nav-icon fas fa-plus"></i> Create New Project
+                    <a href="{% url 'tracker:new_project' %}" class="nav-link {% add_active 'tracker:new_project' %}">
+                        <i class="nav-icon fas fa-plus"></i> Create Project
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{% url 'tracker:project_list' %}"
-                        class="nav-link {% add_active 'tracker:project_list' %}">
-                        <i class="nav-icon fas fa-cogs"></i> Manage Projects
-                    </a>
-                </li>
-                {% for project in projects %}
-                <li class="nav-item">
-                    <a href="{{ project.get_absolute_url }}"
-                        class="nav-link {% add_active 'tracker:issue_list' project.pk %} {% if project_pk == project.pk %}active{% endif %}">
-                        {% comment %} class="nav-link {% if project %}{% add_active 'tracker:issue_list' project.pk %}{% elif project.pk == project_pk %}active{% endif %}"> {% endcomment %}
-                        {% comment %} class="nav-link {% if project.pk == view.kwargs.project_pk or project.pk == project_pk %}active{% endif %}"> {% endcomment %}
-                        <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
-                    </a>
-                </li>
-                {% endfor %}
-
-                <li class="nav-header">FUNCTIONS</li>
                 <li class="nav-item">
                     <a href="{% url 'tracker:new_issue' %} " id="new-issue"
                         class="nav-link {% add_active 'tracker:new_issue' %}">
                         <i class="nav-icon fas fa-bug"></i> Create Issue
                     </a>
-                    {% comment %} <a href="{% url 'tracker:new_issue' %}"
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'tracker:project_list' %}" class="nav-link {% add_active 'tracker:project_list' %}">
+                        <i class="nav-icon fas fa-cogs"></i> Manage Projects
+                    </a>
+                </li>
+
+                <li class="nav-header">PROJECTS</li>
+                {% for project in projects %}
+                <li class="nav-item">
+                    <a href="{{ project.get_absolute_url }}"
+                        class="nav-link {% add_active 'tracker:issue_list' project.pk %} {% if project_pk == project.pk %}active{% endif %}">
+                        <i class="nav-icon fas fa-folder-open"></i> {{ project.name }}
+                    </a>
+                </li>
+                {% endfor %}
+
+                {% comment %} <li class="nav-header">FUNCTIONS</li>
+                <li class="nav-item">
+                    <a href="{% url 'tracker:new_issue' %} " id="new-issue"
                         class="nav-link {% add_active 'tracker:new_issue' %}">
                         <i class="nav-icon fas fa-bug"></i> Create Issue
-                    </a> {% endcomment %}
-                </li>
-                <li class="nav-header">CUSTOM PROJECTS</li>
+                    </a>
+                </li> {% endcomment %}
+                {% comment %} <li class="nav-header">CUSTOM PROJECTS</li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-flask"></i> Customize New Project
                     </a>
-                </li>
+                </li> {% endcomment %}
                 {% endblock nav_links %}
                 {% endblock nav_links_outer %}
             </ul>

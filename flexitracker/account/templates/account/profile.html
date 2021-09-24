@@ -46,6 +46,14 @@
                                     class="float-right">{{ user.profile.work_effort_actual }}</a>
                             </li>
                         </ul>
+                        {% if request.user.pk == user.pk %}
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-primary" href="{% url 'tracker:index' %}">
+                                Check Your Dashboard
+                            </a>
+                        </div>
+                        {% endif %}
+
                     </div>
                     <!-- /.card-body -->
                 </div>

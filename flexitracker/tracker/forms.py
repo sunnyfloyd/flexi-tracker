@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Issue, Project
 from django.contrib.auth import get_user_model
 
@@ -20,26 +21,42 @@ class IssueForm(forms.ModelForm):
             "work_effort_estimate": forms.NumberInput(attrs={"min": 1}),
         }
 
-    # TODO: Limiting selection fields in both project and issue forms should be
-    # additionally validated via cleaning methods:
-    # clean_projects, clean_child_tasks, clean_members
-
     def __init__(self, *args, **kwargs):
         user_pk = kwargs.get("user_pk", None)
         if user_pk:
             kwargs.pop("user_pk")
             user = get_user_model().objects.get(pk=user_pk)
-            projects = (user.projects.all() | user.created_projects.all()).distinct()
+            self.project_scope = (
+                user.projects.all() | user.created_projects.all()
+            ).distinct()
+            self.task_scope = Issue.objects.filter(project__in=self.project_scope)
             super().__init__(*args, **kwargs)
 
             # limiting selection to projects that given user is part of
-            self.fields["project"] = forms.ModelChoiceField(queryset=projects)
+            self.fields["project"] = forms.ModelChoiceField(queryset=self.project_scope)
 
             # limiting selection to issues that are part of user projects
             self.fields["child_tasks"] = forms.ModelMultipleChoiceField(
-                queryset=Issue.objects.filter(project__in=projects)
+                queryset=self.task_scope
             )
             self.fields["child_tasks"].required = False
+
+    def clean_project(self):
+        cd = self.cleaned_data
+        if cd["project"] not in self.project_scope:
+            raise ValidationError(
+                f"Current user is not allowed to create issues for {cd['project']} project."
+            )
+        return cd["project"]
+
+    def clean_child_tasks(self):
+        cd = self.cleaned_data
+        for task in cd["child_tasks"]:
+            if task not in self.task_scope:
+                raise ValidationError(
+                    f"Current user is not allowed to link issues to {task} issue."
+                )
+        return cd["child_tasks"]
 
 
 class ProjectForm(forms.ModelForm):
@@ -53,8 +70,17 @@ class ProjectForm(forms.ModelForm):
         user_pk = kwargs.get("user_pk", None)
         if user_pk:
             kwargs.pop("user_pk")
+            self.user_scope = get_user_model().objects.exclude(pk__in=[1, user_pk])
             super().__init__(*args, **kwargs)
-            self.fields["members"] = forms.ModelMultipleChoiceField(
-                get_user_model().objects.exclude(pk__in=[1, user_pk])
-            )
+
+            self.fields["members"] = forms.ModelMultipleChoiceField(self.user_scope)
             self.fields["members"].required = False
+
+    def clean_members(self):
+        cd = self.cleaned_data
+        for member in cd["members"]:
+            if member not in self.user_scope:
+                raise ValidationError(
+                    f"Member {member} cannot be assigned to this project."
+                )
+        return cd["members"]

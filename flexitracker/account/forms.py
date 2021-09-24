@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Profile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
@@ -18,7 +19,7 @@ class UserCreationAccountForm(UserCreationForm):
         user = get_user_model()
 
         if user.objects.filter(email=cd["email"]):
-            raise forms.ValidationError("User with this email address already exists.")
+            raise ValidationError("User with this email address already exists.")
         return cd["email"]
 
 
