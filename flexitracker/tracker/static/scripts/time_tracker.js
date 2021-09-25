@@ -14,7 +14,7 @@ async function setUpMiniTimer() {
     let runningTimerPk = this.dataset.runningTimer === "None" ? null : this.dataset.runningTimer;
     let action = "stop";
 
-    response = await fetch(`http://${window.location.host}/issue/${runningTimerPk}/time_tracker/`, {
+    response = await fetch(`https://${window.location.host}/issue/${runningTimerPk}/time_tracker/`, {
         method: "POST",
         headers: {
             "X-CSRFToken": getCSRF()
@@ -92,14 +92,12 @@ async function showTime(timerItem, currentWorkEffort) {
     }
     if (!Object.values(timerItem.classList).includes("timer-hidden")) {
         if (currentWorkEffort === undefined) {
-            let response = await fetch(`http://${window.location.host}/user_timer_effort/`, {
+            let response = await fetch(`https://${window.location.host}/user_timer_effort/`, {
                 method: "GET"
             });
             currentWorkEffort = await response.json();
             currentWorkEffort = parseInt(currentWorkEffort.work_effort);
         }
-
-        console.log(currentWorkEffort);
 
         let timerWidget = document.querySelector("#timer-widget");
         var time = convertHMS(currentWorkEffort);

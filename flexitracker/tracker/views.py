@@ -15,6 +15,7 @@ from .custom_mixins import LogDeletionMixin, ProjectContextMixin, TrackerFormMix
 from django.contrib.postgres.search import TrigramSimilarity
 from django.shortcuts import render
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -153,10 +154,24 @@ def issue_search(request):
                 .filter(Q(similarity__gt=0.1), user_project_scope)
                 .order_by("-similarity")
             )
+            paginator = Paginator(results, 3)
+            page = request.GET.get('page')
+            try:
+                page_obj = paginator.page(page)
+            except PageNotAnInteger:
+                page_obj = paginator.page(1)
+            except EmptyPage:
+                page_obj = paginator.page(paginator.num_pages)
+        context = {
+            "paginator": paginator,
+            "page_obj": page_obj,
+            "query": query,
+            "query_url": f"query={query}&"
+        }
     return render(
         request,
         "tracker/search.html",
-        {"results": results, "query": query},
+        add_pagination_context(context),
     )
 
 

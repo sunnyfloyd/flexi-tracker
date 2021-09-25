@@ -81,7 +81,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for issue in results %}
+                                        {% for issue in page_obj %}
                                         <tr class="{% cycle 'odd' 'even' %}">
                                             <td>{{ issue.get_issue_type_display }}</td>
                                             <td><a href="{% url 'tracker:issue_detail' issue.pk %}">{{ issue.name }}</a>

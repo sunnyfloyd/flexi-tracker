@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 
-# import django_heroku
-# import dj_database_url
+import django_heroku
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,20 +83,20 @@ WSGI_APPLICATION = "flexitracker.wsgi.application"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 # DATABASES = {"default": dj_database_url.config()}
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "flexitracker",
-        "USER": "postgres",
-        "PASSWORD": "123",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "flexitracker",
+#         "USER": "postgres",
+#         "PASSWORD": "123",
+#     }
+# }
 
 
 # Password validation
@@ -173,4 +173,4 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Deployment
 
-# django_heroku.settings(locals())
+django_heroku.settings(locals())
