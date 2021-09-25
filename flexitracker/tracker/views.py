@@ -12,8 +12,9 @@ import json
 from guardian.mixins import PermissionRequiredMixin
 from .utils import add_pagination_context
 from .custom_mixins import LogDeletionMixin, ProjectContextMixin, TrackerFormMixin
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import TrigramSimilarity
 from django.shortcuts import render
+from django.db.models import Q
 
 
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -131,6 +132,7 @@ class ProjectDeleteView(
 
 
 ################## SEARCH VIEW ##################
+@login_required
 def issue_search(request):
     query = None
     results = []
@@ -138,22 +140,23 @@ def issue_search(request):
         form = SearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data["query"]
-            search_vector = (
-                SearchVector("name", weight="A")
-                + SearchVector("description", weight="B")
+            trigram = (
+                TrigramSimilarity("name", query)
+                + TrigramSimilarity("description", query)
             )
-            search_query = SearchQuery(query)
+            user_project_scope = (
+                Q(project__in=request.user.projects.all())
+                | Q(project__in=request.user.created_projects.all())
+            )
             results = (
-                Issue.objects.annotate(
-                    search=search_vector, rank=SearchRank(search_vector, search_query)
-                )
-                .filter(search=search_query) 
-                .order_by("-rank")
+                Issue.objects.annotate(similarity=trigram)
+                .filter(Q(similarity__gt=0.1), user_project_scope)
+                .order_by("-similarity")
             )
     return render(
         request,
         "tracker/search.html",
-        {"results": results},
+        {"results": results, "query": query},
     )
 
 
