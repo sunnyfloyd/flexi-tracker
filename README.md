@@ -1,7 +1,7 @@
 # Flexi-Tracker
 
 <p align="center">
-  <a href="https://bs-free-job-search.herokuapp.com"><img src="https://i.imgur.com/1XIHQdo.png" alt="Flexi-Tracker"></a>
+  <a href="https://bs-free-job-search.herokuapp.com"><img src="https://i.imgur.com/1XIHQdo.png" alt="Flexi-Tracker" width="250" height="250"></a>
 </p>
 
 Flexi-Tracker is a light-weight web application providing fully featured multi-user tracker to let you keep an eye on your projects' progress.
