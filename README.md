@@ -33,7 +33,7 @@ Flexi-Tracker is a light-weight web application providing fully featured multi-u
 ## Application Screenshots
 <p align="center">
   <img src="https://i.imgur.com/FRxJDpV.png" alt="flexi-tracker" width="200">
-  <img src="https://i.imgur.com/Qn4ygAW.png" alt="flexi-tracker" width="200">
-  <img src="https://i.imgur.com/SDhLXLn.png" alt="flexi-tracker" width="200">
-  <img src="https://i.imgur.com/kQ6gfkb.png" alt="flexi-tracker" width="200">
+  <img src="https://i.imgur.com/0CnJNld.png" alt="flexi-tracker" width="200">
+  <img src="https://i.imgur.com/uU76NEf.png" alt="flexi-tracker" width="200">
+  <img src="https://i.imgur.com/6Fmla5b.png" alt="flexi-tracker" width="200">
 </p>
