@@ -14,6 +14,7 @@ Flexi-Tracker is a light-weight web application providing fully featured multi-u
 ---
 
 **Live Version**: <a href="https://flexi-tracker.herokuapp.com/" target="_blank">https://flexi-tracker.herokuapp.com/</a>
+(You can login to see example of user view and you can inspect populated project for Flexi-Tracker L: tester0 P: flexitrackertester)
 
 ---
 
