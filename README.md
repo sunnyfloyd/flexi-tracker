@@ -29,3 +29,10 @@ Flexi-Tracker is a light-weight web application providing fully featured multi-u
 - Django web-framework for application backend and server-side rendering
 - Javascript for AJAX-based widgets
 - Bootstrap and AdminLTE for UI
+
+## Application View
+
+<img src="https://i.imgur.com/FRxJDpV.png" alt="flexi-tracker">
+<img src="https://i.imgur.com/Qn4ygAW.png" alt="flexi-tracker">
+<img src="https://i.imgur.com/SDhLXLn.png" alt="flexi-tracker">
+<img src="https://i.imgur.com/kQ6gfkb.png" alt="flexi-tracker">
