@@ -128,7 +128,6 @@ class Issue(models.Model):
         choices=ISSUE_STATUS_CHOICES, max_length=20, default="to_do"
     )
     work_effort_estimate = models.IntegerField(validators=[MinValueValidator(1)])
-    # work_effort_actual = models.IntegerField(default=0)
     due_date = models.DateTimeField()
     child_tasks = models.ManyToManyField(
         "self", symmetrical=False, blank=True, related_name="parent_tasks"
@@ -203,7 +202,6 @@ class Log(models.Model):
     @property
     def description_timeline(self):
         related_object = (
-            # "issue"
             f"issue: <a href='{self.issue.get_absolute_url()}'>{self.issue.name}</a>"
             if self.issue
             else (

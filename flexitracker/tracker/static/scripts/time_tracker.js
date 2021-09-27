@@ -33,7 +33,7 @@ async function setUpMiniTimer() {
     timerItem.classList.toggle("timer-hidden");
 
     if (timerControl !== null) {
-        workEffort.innerHTML = data.work_effort_actual;
+        workEffort.innerHTML = `${data.work_effort_actual} mins`;
         timerControl.innerHTML = "Start Timer";
         timerControl.dataset.runningTimer = "None";
         timerControl.classList.toggle("btn-info");
@@ -68,7 +68,7 @@ async function setUpTimer() {
         let workEffort = document.querySelector("#work-effort");
         let timerItem = document.querySelector("#timer-item");
 
-        workEffort.innerHTML = data.work_effort_actual;
+        workEffort.innerHTML = `${data.work_effort_actual} mins`;
 
         timerItem.classList.toggle("timer-hidden");
         this.classList.toggle("btn-info");

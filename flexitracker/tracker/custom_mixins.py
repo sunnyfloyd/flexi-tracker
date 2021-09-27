@@ -29,7 +29,9 @@ class TrackerFormMixin(ModelFormMixin):
             instance.creator = self.request.user
         return super().form_valid(form)
 
-
+# TODO: This probably needs to be moved to pre_delete signal
+# to work from Admin Panel, but only if it will not be called
+# for cascaded items
 class LogDeletionMixin(DeletionMixin):
     def delete(self, request, *args, **kwargs):
         # Extending 'delete' method to update 'last_update_by' field
