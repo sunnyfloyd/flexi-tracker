@@ -20,11 +20,12 @@ Flexi-Tracker is a light-weight web application providing fully featured multi-u
 ## Technological Stack
 
 <p align="center">
-  <img src="https://www.vectorlogo.zone/logos/pocoo_flask/pocoo_flask-icon.svg" alt="flask-logo">
-  <img src="https://upload.vectorlogo.zone/logos/sveltetechnology/images/fc06c9b6-d01c-4e1f-82be-557ad5f65d6e.svg" alt="svelte-logo" width="64" height="64">
+  <img src="https://www.vectorlogo.zone/logos/djangoproject/djangoproject-icon.svg" alt="django-logo">
+  <img src="https://commons.wikimedia.org/wiki/File:Unofficial_JavaScript_logo_2.svg" alt="javascript-logo" width="64" height="64">
+  <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="adminlte-logo" width="64" height="64">
   <img src="https://www.vectorlogo.zone/logos/getbootstrap/getbootstrap-icon.svg" alt="bootstrap-logo">
 </p>
 
-- Flask for REST API and server that serves static files.
-- Svelte for building a dynamic, single-page based application.
-- Bootstrap for UI visuals.
+- Django web-framework for application backend and server-side rendering
+- Javascript for AJAX-based widgets
+- Bootstrap and AdminLTE for UI
