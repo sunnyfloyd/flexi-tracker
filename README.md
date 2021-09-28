@@ -24,9 +24,10 @@ Flexi-Tracker is a light-weight web application providing fully featured multi-u
 <p align="center">
   <img src="https://www.vectorlogo.zone/logos/djangoproject/djangoproject-icon.svg" alt="django-logo">
   <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg" alt="javascript-logo" width="64" height="64">
-  <img src="https://www.vectorlogo.zone/logos/postgresql/postgresql-vertical.svg" alt="javascript-logo" width="64" height="64">
+  <img src="https://www.vectorlogo.zone/logos/postgresql/postgresql-icon.svg" alt="postgresql-logo" width="64" height="64">
   <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="adminlte-logo" width="64" height="64">
   <img src="https://www.vectorlogo.zone/logos/getbootstrap/getbootstrap-icon.svg" alt="bootstrap-logo">
+  <img src="https://www.vectorlogo.zone/logos/heroku/heroku-icon.svg" alt="heroku-logo" width="64" height="64">
 </p>
 
 - Django web-framework for application backend and server-side rendering
