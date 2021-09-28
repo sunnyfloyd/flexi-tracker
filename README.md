@@ -32,6 +32,8 @@ Flexi-Tracker is a light-weight web application providing fully featured multi-u
 - Django web-framework for application backend and server-side rendering
 - Javascript for AJAX-based widgets
 - Bootstrap and AdminLTE for UI
+- Whitenoise middleware used for serving static files
+- Deployed on Heroku with linked PostgreSQL DB
 
 ## Application Screenshots
 <p align="center">
