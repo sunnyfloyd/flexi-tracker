@@ -21,13 +21,12 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 class IndexView(LoginRequiredMixin, generic.ListView):
     template_name = "tracker/dashboard.html"
     model = Issue
-    paginate_by = 3
+    paginate_by = 10
 
     def get_queryset(self):
         return self.request.user.profile.get_assigned_issues()
 
     def get_context_data(self, **kwargs):
-        # Adding additional pagination variables
         context = super().get_context_data(**kwargs)
         return add_pagination_context(context)
 
@@ -45,7 +44,7 @@ class IssueDetailView(PermissionRequiredMixin, generic.DetailView, ProjectContex
 class IssueListView(PermissionRequiredMixin, generic.ListView, ProjectContextMixin):
     template_name = "tracker/issue_list.html"
     model = Project
-    paginate_by = 3
+    paginate_by = 10
     permission_required = "view_project"
 
     def get_queryset(self):
@@ -135,6 +134,11 @@ class ProjectDeleteView(
 ################## SEARCH VIEW ##################
 @login_required
 def issue_search(request):
+    """
+    View returning list of issues that match given query based on Trigram Similarity.
+
+    Requires pg_trgm extension to be installed on a PostgreSQL database.
+    """
     query = None
     results = []
     if "query" in request.GET:
@@ -154,7 +158,7 @@ def issue_search(request):
                 .filter(Q(similarity__gt=0.1), user_project_scope)
                 .order_by("-similarity")
             )
-            paginator = Paginator(results, 3)
+            paginator = Paginator(results, 10)
             page = request.GET.get('page')
             try:
                 page_obj = paginator.page(page)
@@ -179,6 +183,10 @@ def issue_search(request):
 @login_required
 @require_http_methods(["POST"])
 def time_tracker(request, pk):
+    """
+    This view allows for starting and stopping work timer for a logged user
+    and returns logged work effort in seconds.
+    """
     issue = Issue.objects.get(pk=pk)
     if not issue:
         return JsonResponse({"message": "There is no issue with this ID."}, status=404)
@@ -188,7 +196,7 @@ def time_tracker(request, pk):
     if action.lower() == "start":
         if request.user.profile.has_running_timer:
             return JsonResponse(
-                {"message": "You cannot have multiple running time trackers."},
+                {"message": "You cannot have multiple running timers."},
                 status=403,
             )
         TimeEntry.objects.create(user=request.user, issue=issue)
@@ -216,6 +224,10 @@ def time_tracker(request, pk):
 # @login_required
 @require_http_methods(["GET"])
 def get_user_timer_effort(request):
+    """
+    This view returns work effort in seconds clocked on current user's running timer
+    if user has one.
+    """
     if request.user.profile.has_running_timer:
         time_entry = request.user.time_entries.get(user=request.user, end_time=None)
         return JsonResponse({"work_effort": time_entry.work_effort}, status=200)

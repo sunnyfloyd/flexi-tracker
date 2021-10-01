@@ -10,8 +10,10 @@ User = get_user_model()
 
 
 class TrackerTestUtils(TestCase):
-    # Utility functions
     def create_users(self, usernames):
+        """
+        Create generic users using passed usernames and commit them to a database.
+        """
         for username in usernames:
             user = User(username=username, email=f"{username}@example.com")
             user.set_password("123")
@@ -21,6 +23,10 @@ class TrackerTestUtils(TestCase):
             profile.save()
 
     def create_projects(self, projects):
+        """
+        Create generic projects using passed iterable object of kwargs and project
+        members and commit them to a database.
+        """
         for kwargs, members in projects:
             project = Project.objects.create(**kwargs)
             member_pks = [
@@ -29,6 +35,10 @@ class TrackerTestUtils(TestCase):
             project.members.set(member_pks)
 
     def create_issues(self, issues):
+        """
+        Create generic issues using passed iterable object of kwargs and related
+        object pks and commit them to a database.
+        """
         for kwargs, creator_name, assignee_name, project_name, tasks in issues:
             issue = Issue.objects.create(
                 **kwargs,
@@ -120,19 +130,37 @@ class TrackerTestUtils(TestCase):
 
 
 # Tests
-class ProjectTestCase(TrackerTestUtils):
+class ProjectIssueTestCase(TrackerTestUtils):
     def test_project_open_issues(self):
+        """
+        The count of open issues for a project should match the number of issue
+        objects that are not in 'done' status and are linked to that project.
+        """
         self.assertEqual(Project.objects.get(name="project0").open_issues, 1)
         self.assertEqual(Project.objects.get(name="project2").open_issues, 2)
 
     def test_project_closed_issues(self):
+        """
+        The count of closed issues for a project should match the number of issue
+        objects that are in 'done' status and are linked to that project.
+        """
         self.assertEqual(Project.objects.get(name="project0").closed_issues, 1)
         self.assertEqual(Project.objects.get(name="project2").closed_issues, 0)
 
     def test_issue_view_permission(self):
+        """
+        Only members and a leader of a project should have 'view_project'
+        permission to a specific project instance.
+        """
         self.assertIs(
             User.objects.get(username="tester2").has_perm(
                 "view_project", Project.objects.get(name="project1")
+            ),
+            True,
+        )
+        self.assertIs(
+            User.objects.get(username="tester0").has_perm(
+                "view_project", Project.objects.get(name="project0")
             ),
             True,
         )
@@ -144,6 +172,10 @@ class ProjectTestCase(TrackerTestUtils):
         )
 
     def test_issue_change_permission(self):
+        """
+        Only members and a leader of a project should have 'change_project_issue'
+        permission to a specific project instance.
+        """
         self.assertIs(
             User.objects.get(username="tester0").has_perm(
                 "change_project_issue", Project.objects.get(name="project0")
@@ -164,6 +196,10 @@ class ProjectTestCase(TrackerTestUtils):
         )
 
     def test_issue_delete_permission(self):
+        """
+        Only issue creator and a leader of a project should have 'delete_issue'
+        permission to a specific issue instance.
+        """
         self.assertIs(
             User.objects.get(username="tester3").has_perm(
                 "delete_issue", Issue.objects.get(name="issue2")
@@ -190,6 +226,10 @@ class ProjectTestCase(TrackerTestUtils):
         )
 
     def test_project_change_delete_permission(self):
+        """
+        Only leader of a project should have 'change_project'
+        and 'delete_project' permissions to a specific project instance.
+        """
         self.assertIs(
             User.objects.get(username="tester0").has_perm(
                 "change_project", Project.objects.get(name="project0")
@@ -218,16 +258,45 @@ class ProjectTestCase(TrackerTestUtils):
 
 class TimeEntryTestCase(TrackerTestUtils):
     def test_project_work_effort_actual(self):
-        te = TimeEntry.objects.create(
+        """
+        Work effort should be logged and calculated correctly for projects.
+        """
+        TimeEntry.objects.create(
             user=User.objects.get(username="tester0"),
             issue=Issue.objects.get(name="issue3"),
             end_time=timezone.now() + timedelta(hours=2),
         )
+        TimeEntry.objects.create(
+            user=User.objects.get(username="tester3"),
+            issue=Issue.objects.get(name="issue2"),
+            end_time=timezone.now() + timedelta(hours=2),
+        )
         self.assertAlmostEqual(
-            Project.objects.get(name="project2").work_effort_actual, 120
+            Project.objects.get(name="project2").work_effort_actual, 240
+        )
+
+    def test_issue_work_effort_actual(self):
+        """
+        Work effort should be logged and calculated correctly for issues.
+        """
+        TimeEntry.objects.create(
+            user=User.objects.get(username="tester0"),
+            issue=Issue.objects.get(name="issue3"),
+            end_time=timezone.now() + timedelta(hours=2),
+        )
+        TimeEntry.objects.create(
+            user=User.objects.get(username="tester3"),
+            issue=Issue.objects.get(name="issue3"),
+            end_time=timezone.now() + timedelta(hours=1),
+        )
+        self.assertAlmostEqual(
+            Issue.objects.get(name="issue3").work_effort_actual, 180
         )
 
     def test_time_entry_is_active(self):
+        """
+        Time entry object without an end date should appear as active.
+        """
         te = TimeEntry.objects.create(
             user=User.objects.get(username="tester0"),
             issue=Issue.objects.get(name="issue3"),
@@ -239,6 +308,10 @@ class TimeEntryTestCase(TrackerTestUtils):
 
 class LogTestCase(TrackerTestUtils):
     def test_user_project_creation_log(self):
+        """
+        The count of logged project creations should match the number of projects
+        created by a queried user.
+        """
         self.assertEqual(
             User.objects.get(username="tester0").logs.filter(issue=None).count(), 2
         )
@@ -250,11 +323,21 @@ class LogTestCase(TrackerTestUtils):
         )
 
     def test_user_issue_creation_log(self):
+        """
+        The count of logged issue creations should match the number of issues
+        created by a queried user.
+        """
         self.assertEqual(
             User.objects.get(username="tester2").logs.exclude(issue=None).count(), 2
         )
+        self.assertEqual(
+            User.objects.get(username="tester0").logs.exclude(issue=None).count(), 0
+        )
 
     def test_user_project_change_log(self):
+        """
+        Update to a project object is properly logged.
+        """
         project = Project.objects.get(name="project2")
         user = User.objects.get(username="tester1")
         log_count = user.logs.filter(project=project).count()
@@ -264,6 +347,9 @@ class LogTestCase(TrackerTestUtils):
         self.assertEqual(user.logs.filter(project=project).count(), log_count + 1)
 
     def test_user_issue_change_log(self):
+        """
+        Update to an issue object is properly logged.
+        """
         issue = Issue.objects.get(name="issue2")
         user = User.objects.get(username="tester0")
         log_count = user.logs.filter(issue=issue).count()
@@ -273,6 +359,9 @@ class LogTestCase(TrackerTestUtils):
         self.assertEqual(user.logs.filter(issue=issue).count(), log_count + 1)
 
     def test_project_delete_log(self):
+        """
+        Deletion of a project is properly logged.
+        """
         project = Project.objects.get(name="project2")
         user = User.objects.get(username="tester1")
         log_count = user.logs.filter(project=project).exclude(removed_object="").count()
@@ -282,8 +371,11 @@ class LogTestCase(TrackerTestUtils):
             user.logs.filter(project=project).exclude(removed_object="").count(),
             log_count + 1,
         )
-    
+
     def test_issue_delete_log(self):
+        """
+        Deletion of an issue is properly logged.
+        """
         issue = Issue.objects.get(name="issue2")
         user = User.objects.get(username="tester0")
         log_count = user.logs.filter(issue=issue).exclude(removed_object="").count()

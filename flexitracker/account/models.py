@@ -30,12 +30,19 @@ class Profile(models.Model):
 
     @property
     def logs_grouped_by_day(self):
+        """
+        QuesySets of logs (values) for queried user grouped by date (keys).
+        """
         logs = self.user.logs.annotate(day=TruncDay("date")).order_by("-date")
         days = sorted(tuple({obj["day"] for obj in logs.values("day")}), reverse=True)
         return {day: logs.filter(day=day) for day in days}
 
     @property
     def has_running_timer(self):
+        """
+        Returns boolean value that indicates if user instance has a running
+        timer or not.
+        """
         try:
             te = self.user.time_entries.get(end_time=None)
         except exceptions.ObjectDoesNotExist:
@@ -44,5 +51,6 @@ class Profile(models.Model):
 
     @property
     def work_effort_actual(self):
+        """Total work effort spent on issues by a given user."""
         queryset = self.user.time_entries.filter(Q(user=self.user), ~Q(end_time=None))
         return get_work_effort(queryset)

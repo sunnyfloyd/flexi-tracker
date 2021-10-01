@@ -73,7 +73,7 @@
                         </small>
                     </td>
                     <td class="project-state">
-                        <span class="badge badge-{{ project.status }}">{{ project.status|capfirst }}</span>
+                        <span class="badge badge-{{ project.status_class }}">{{ project.status|capfirst }}</span>
                     </td>
                     <td class="project-actions text-right">
                         <a class="btn btn-primary btn-sm" href="{{ project.get_absolute_url }}">
