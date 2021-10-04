@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Issue, Project
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user, get_user_model
 
 
 class IssueForm(forms.ModelForm):
@@ -65,12 +65,15 @@ class ProjectForm(forms.ModelForm):
         exclude = ("creator", "last_update", "last_update_by")
 
     def __init__(self, *args, **kwargs):
-        # removing project creator and AnonymousUser added by
-        # django-guardian to the selection field
+        # removing from the selection field project creator and AnonymousUser
+        # added by django-guardian to the selection field
         user_pk = kwargs.get("user_pk", None)
         if user_pk:
             kwargs.pop("user_pk")
-            self.user_scope = get_user_model().objects.exclude(pk__in=[1, user_pk])
+            anonym_pk = get_user_model().objects.get(username="AnonymousUser").pk
+            self.user_scope = get_user_model().objects.exclude(
+                pk__in=[anonym_pk, user_pk]
+            )
             super().__init__(*args, **kwargs)
 
             self.fields["members"] = forms.ModelMultipleChoiceField(self.user_scope)
@@ -84,6 +87,7 @@ class ProjectForm(forms.ModelForm):
                     f"Member {member} cannot be assigned to this project."
                 )
         return cd["members"]
+
 
 class SearchForm(forms.Form):
     query = forms.CharField()

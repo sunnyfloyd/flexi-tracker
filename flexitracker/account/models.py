@@ -18,14 +18,17 @@ class Profile(models.Model):
         return reverse("account:profile", kwargs={"pk": self.user.pk})
 
     def get_assigned_issues(self):
+        """QuerySet of open issues assigned to the current user."""
         return self.user.assigned_issues.filter(~Q(status="done"))
 
     @property
     def created_issues_count(self):
+        """Count of issues created by the user."""
         return self.user.created_issues.count()
 
     @property
     def assigned_issues_count(self):
+        """Count of open issues assigned to the user."""
         return self.get_assigned_issues().count()
 
     @property

@@ -1,3 +1,6 @@
+# Below overwrites default AdminLTE helpers to include slight functionality
+# modifications
+
 from hashlib import md5
 
 from django import template
@@ -18,7 +21,6 @@ def logout_url():
 def avatar_url(context, size=None, user=None):
     # TODO: Make behaviour configurable
     user = context['request'].user if user is None else user
-    # return "/static/admin-lte/dist/img/avatar5.png"
     return 'https://www.gravatar.com/avatar/{hash}?s={size}&d=identicon'.format(
         hash=md5(user.email.encode('utf-8')).hexdigest() if is_authenticated(user) else '',
         size=size or '',
